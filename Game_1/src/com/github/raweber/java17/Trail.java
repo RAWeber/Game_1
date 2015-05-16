@@ -8,13 +8,13 @@ import java.awt.Rectangle;
 
 public class Trail extends GameObject {
 
-	private float alpha = 1;
+	private double alpha = 1;
 	private Color color;
 	private int width, height;
 	//life between 0.001 to 0.01
-	private float life;
+	private double life;
 	
-	public Trail(int x, int y, ID id, Color color, int width, int height, float life, Handler handler) {
+	public Trail(double x, double y, ID id, Color color, int width, int height, double life, Handler handler) {
 		super(x, y, id, handler);
 		this.color = color;
 		this.width = width;
@@ -24,15 +24,15 @@ public class Trail extends GameObject {
 
 	public void tick() {
 		if(alpha>life){
-			alpha -= life-0.001f;
+			alpha -= life-0.001;
 		}else handler.removeObject(this);
 	}
 
 	public void render(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setComposite(makeTransparent(alpha));
+		g2d.setComposite(makeTransparent((float)alpha));
 		g.setColor(color);
-		g.fillRect(x, y, width, height);
+		g.fillRect((int)x, (int)y, width, height);
 
 		g2d.setComposite(makeTransparent(1f));
 	}
