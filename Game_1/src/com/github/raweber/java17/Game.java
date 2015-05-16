@@ -16,10 +16,14 @@ public class Game extends Canvas implements Runnable {
 	
 	private Handler handler;
 
-	public Game() {
+	public Game() {	
+		handler = new Handler();
+		this.addKeyListener(new KeyInput(handler));
+		
 		new Window(WIDTH, HEIGHT, "Game_1", this);
 		
-		handler = new Handler();
+		handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32,ID.Player));
+		handler.addObject(new Player(WIDTH/2+50,HEIGHT/2-32,ID.Player2));
 	}
 
 	public synchronized void start() {
