@@ -1,22 +1,27 @@
 package com.github.raweber.java17;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 public abstract class GameObject {
-	
+
 	protected int x, y;
 	protected ID id;
 	protected int velX, velY;
+	protected Handler handler;
 
-	public GameObject(int x, int y, ID id) {
+	public GameObject(int x, int y, ID id, Handler handler) {
 		this.x = x;
 		this.y = y;
 		this.id = id;
+		this.handler = handler;
 	}
 
 	public abstract void tick();
 
 	public abstract void render(Graphics g);
+
+	public abstract Rectangle getBounds();
 
 	public void setX(int x) {
 		this.x = x;
@@ -38,7 +43,7 @@ public abstract class GameObject {
 		this.id = id;
 	}
 
-	public ID getId(){
+	public ID getId() {
 		return id;
 	}
 
