@@ -30,7 +30,7 @@ public class Game extends Canvas implements Runnable {
 	public Game() {
 		handler = new Handler();
 		hud = new HUD();
-		menu = new Menu(this, handler, hud);
+		menu = new Menu(handler, hud);
 		this.addKeyListener(new KeyInput(handler));
 		this.addMouseListener(menu);
 

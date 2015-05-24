@@ -11,13 +11,11 @@ import com.github.raweber.java17.Game.STATE;
 
 public class Menu extends MouseAdapter {
 
-	private Game game;
 	private Handler handler;
 	private HUD hud;
 	private Random r = new Random();
 
-	public Menu(Game game, Handler handler, HUD hud) {
-		this.game = game;
+	public Menu(Handler handler, HUD hud) {
 		this.handler = handler;
 		this.hud = hud;
 	}
@@ -26,10 +24,10 @@ public class Menu extends MouseAdapter {
 		int mx = e.getX();
 		int my = e.getY();
 
-		if (game.gameState == STATE.Menu) {
+		if (Game.gameState == STATE.Menu) {
 			// play button
 			if (mouseOver(mx, my, 210, 150, 200, 64)) {
-				game.gameState = STATE.Game;
+				Game.gameState = STATE.Game;
 				handler.addObject(new Player(Game.WIDTH / 2 - 32,
 						Game.HEIGHT / 2 - 32, ID.Player, handler));
 				handler.clearEnemys();
@@ -40,7 +38,7 @@ public class Menu extends MouseAdapter {
 
 			// help button
 			if (mouseOver(mx, my, 210, 250, 200, 64)) {
-				game.gameState = STATE.Help;
+				Game.gameState = STATE.Help;
 			}
 
 			// quit button
@@ -49,15 +47,15 @@ public class Menu extends MouseAdapter {
 			}
 		}
 
-		if (game.gameState == STATE.Help) {
+		if (Game.gameState == STATE.Help) {
 			if (mouseOver(mx, my, 210, 350, 200, 64)) {
-				game.gameState = STATE.Menu;
+				Game.gameState = STATE.Menu;
 			}
 		}
 		
-		if (game.gameState == STATE.End) {
+		if (Game.gameState == STATE.End) {
 			if (mouseOver(mx, my, 210, 350, 200, 64)) {
-				game.gameState = STATE.Game;
+				Game.gameState = STATE.Game;
 				hud.setLevel(1);
 				hud.setScore(0);
 				handler.addObject(new Player(Game.WIDTH / 2 - 32,
@@ -89,7 +87,7 @@ public class Menu extends MouseAdapter {
 	}
 
 	public void render(Graphics g) {
-		if (game.gameState == STATE.Menu) {
+		if (Game.gameState == STATE.Menu) {
 			Font fnt = new Font("arial", 1, 50);
 			Font fnt2 = new Font("arial", 1, 30);
 
@@ -106,7 +104,7 @@ public class Menu extends MouseAdapter {
 
 			g.drawRect(210, 350, 200, 64);
 			g.drawString("Quit", 270, 390);
-		} else if (game.gameState == STATE.Help) {
+		} else if (Game.gameState == STATE.Help) {
 			Font fnt = new Font("arial", 1, 50);
 			Font fnt2 = new Font("arial", 1, 30);
 			Font fnt3 = new Font("arial", 1, 20);
@@ -123,7 +121,7 @@ public class Menu extends MouseAdapter {
 			g.setFont(fnt2);
 			g.drawRect(210, 350, 200, 64);
 			g.drawString("Back", 270, 390);
-		} else if (game.gameState == STATE.End) {
+		} else if (Game.gameState == STATE.End) {
 			Font fnt = new Font("arial", 1, 50);
 			Font fnt2 = new Font("arial", 1, 30);
 			Font fnt3 = new Font("arial", 1, 20);
