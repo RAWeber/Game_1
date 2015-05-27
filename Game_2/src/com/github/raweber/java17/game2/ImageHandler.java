@@ -11,6 +11,7 @@ public class ImageHandler {
 		
 	public static void addImages(){
 		images.put("BasicTower", new ImageIcon("res/BasicTower.png"));
+		images.put("Terrain", new ImageIcon("res/Terrain.png"));
 	}
 	
 	public static Image getIcon(String type){

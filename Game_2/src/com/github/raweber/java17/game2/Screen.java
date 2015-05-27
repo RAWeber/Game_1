@@ -11,7 +11,6 @@ import java.awt.Image;
 import java.awt.image.CropImageFilter;
 import java.awt.image.FilteredImageSource;
 
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public class Screen extends JPanel implements Runnable {
@@ -50,12 +49,10 @@ public class Screen extends JPanel implements Runnable {
 		level=levelFile.getLevel("Level1");
 		level.findSpawnPoint();
 		map=level.getMap();
-		ClassLoader cl = this.getClass().getClassLoader();
 		
 		for (int y=0;y<10;y++){
 			for(int x=0;x<10;x++){
-				terrain[x+y*10]=new ImageIcon(cl.getResource(packageName + "Terrain.png")).getImage();
-				terrain[x+y*10]=createImage(new FilteredImageSource(terrain[x+y*10].getSource(), new CropImageFilter(x*25,y*25,25,25)));
+				terrain[x+y*10]=createImage(new FilteredImageSource(ImageHandler.getIcon("Terrain").getSource(), new CropImageFilter(x*25,y*25,25,25)));
 			}
 		}
 	}
