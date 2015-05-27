@@ -7,16 +7,13 @@ import javax.swing.ImageIcon;
 
 public class ImageHandler {
 	
-	private HashMap<String, ImageIcon> images;
-	
-	public ImageHandler(){
-		images = new HashMap<String, ImageIcon>();
+	private static HashMap<String, ImageIcon> images = new HashMap<String, ImageIcon>();
 		
+	public static void addImages(){
 		images.put("BasicTower", new ImageIcon("res/BasicTower.png"));
-		
 	}
 	
-	public Image getIcon(String type){
+	public static Image getIcon(String type){
 		return images.get(type).getImage();
 	}
 }

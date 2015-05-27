@@ -4,6 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 
+
+
+
+import java.awt.Image;
+import java.awt.image.CropImageFilter;
+import java.awt.image.FilteredImageSource;
+
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public class Screen extends JPanel implements Runnable {
@@ -15,22 +23,45 @@ public class Screen extends JPanel implements Runnable {
 	public enum STATE {
 		Menu, Game;
 	};
+	
 	public static STATE gameState = STATE.Game;
 	
-	Player player;
-	ImageHandler handler;
+	private static double ratio=(double)(Frame.WIDTH)/Frame.HEIGHT;
+	
+	public static int TOWER_WIDTH=(int)(Frame.WIDTH/ratio/25);
+	public static int TOWER_HEIGHT=(int)(Frame.HEIGHT/25);
+	
+	private int[][] map = new int[25][15];
+	private Tower[][] towerMap = new Tower[25][15];
+	private Image[] terrain = new Image[100];
+	private String packageName="com/github/raweber/java17/game2/";
+	
+	private Level level;
+	private LevelFile levelFile;
+	public static Player player;
+	//TowerStore towerStore;
 	
 	public Screen() {
 		thread.start();
 		player = new Player();
-		handler = new ImageHandler();
-
+		levelFile=new LevelFile();
+		ImageHandler.addImages();
+		//towerStore=new TowerStore(this);
+		level=levelFile.getLevel("Level1");
+		level.findSpawnPoint();
+		map=level.getMap();
+		ClassLoader cl = this.getClass().getClassLoader();
+		
+		for (int y=0;y<10;y++){
+			for(int x=0;x<10;x++){
+				terrain[x+y*10]=new ImageIcon(cl.getResource(packageName + "Terrain.png")).getImage();
+				terrain[x+y*10]=createImage(new FilteredImageSource(terrain[x+y*10].getSource(), new CropImageFilter(x*25,y*25,25,25)));
+			}
+		}
 	}
 
 	public void paintComponent(Graphics g) {
 		g.clearRect(0, 0, Frame.WIDTH, Frame.HEIGHT);
-		int w=Frame.WIDTH/30;
-		int h=(int)(Frame.HEIGHT/22.5);
 		
 		if(gameState==STATE.Menu){
 			g.setColor(Color.BLACK);
@@ -40,37 +71,42 @@ public class Screen extends JPanel implements Runnable {
 			g.fillRect(0, 0, Frame.WIDTH, Frame.HEIGHT);
 			g.setColor(Color.black);
 
-			for(int x=0;x<24;x++){
-				for(int y=0;y<16;y++){
-					g.drawRect(w+(x*w), h+(y*h), w, h);
+			for(int x=0;x<25;x++){
+				for(int y=0;y<15;y++){
+					g.drawImage(terrain[map[x][y]], TOWER_WIDTH+x*TOWER_WIDTH, TOWER_HEIGHT+y*TOWER_HEIGHT, TOWER_WIDTH,TOWER_HEIGHT, null);
+					g.drawRect(TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
 				}
 			}
 			
-			for(int x=0;x<10;x++){
-				for(int y=0;y<2;y++){
-					g.setColor(Color.black);
-					g.drawRect(250+(x*w), Frame.HEIGHT-190+(y*h), w, h);
-					if(Tower.towers[x*2+y]!=null){
-						Tower.towers[x*2+y].render(g, handler, 250+(x*w), Frame.HEIGHT-190+(y*h),w,h);
-						if(Tower.towers[x*2+y].getCost()>player.getMoney()){
-							g.setColor(new Color(255,0,0,100));
-							g.fillRect(250+(x*w), Frame.HEIGHT-190+(y*h), w, h);
-						}
-					}
-				}
-			}
-			
+			TowerStore.render(g);		
 			player.render(g);
+			
+			if(MouseHandler.holding!=0 && TowerStore.towers[MouseHandler.holding-1]!=null){
+				TowerStore.towers[MouseHandler.holding-1].render(g, MouseHandler.getMouseX()-(int)(TOWER_WIDTH/2), MouseHandler.getMouseY()-(int)(TOWER_HEIGHT/2),TOWER_WIDTH,TOWER_HEIGHT);
+			}
 		}
 		g.setColor(Color.white);
 		g.drawString(fps+"", 10, 15);
 		
 
 	}
+	
+	public void placeTower(int x, int y){
+		int xPos=(x-TOWER_WIDTH)/TOWER_WIDTH;
+		int yPos=(y-TOWER_HEIGHT)/TOWER_HEIGHT;
+		
+		if(xPos>25 || yPos>15){
+			
+		}else if(towerMap[xPos][yPos]==null && map[xPos][yPos]==0){
+			player.setMoney(player.getMoney()-TowerStore.towers[x*2+y].getCost());
+			towerMap[xPos][yPos]=TowerStore.towers[MouseHandler.holding-1];
+		}
+	}
 
 	public void run() {
-		System.out.println("[Success] Frame Greated");
-		
+		System.out.println("[Success] Frame Created");
+		System.out.println("Width: "+Frame.WIDTH+" Height: "+Frame.HEIGHT);
+
 		long lastFrame = System.currentTimeMillis();
 		int frames = 0;
 
@@ -93,5 +129,8 @@ public class Screen extends JPanel implements Runnable {
 
 		}
 	}
-
+	
+	//public Player getPlayer(){
+		//return player;
+	//}
 }

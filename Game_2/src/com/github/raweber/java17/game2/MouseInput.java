@@ -19,7 +19,7 @@ public class MouseInput implements MouseListener, MouseMotionListener {
 	}
 
 	public void mousePressed(MouseEvent e) {
-
+		MouseHandler.mouseDown(e);
 	}
 
 	public void mouseReleased(MouseEvent e) {
@@ -27,11 +27,11 @@ public class MouseInput implements MouseListener, MouseMotionListener {
 	}
 
 	public void mouseDragged(MouseEvent e) {
-		
+		MouseHandler.mouseMoved(e);
 	}
 
 	public void mouseMoved(MouseEvent e){
-		
+		MouseHandler.mouseMoved(e);
 	}
 
 }
