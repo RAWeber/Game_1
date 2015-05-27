@@ -7,11 +7,7 @@ public class TowerStore {
 	
 	//private Screen screen;
 	public static Tower[] towers= new Tower[20];
-	private static BasicTower tower=new BasicTower();
-	
-	//public TowerStore(Screen screen){
-		//this.screen=screen;
-	//}
+	private static BasicTower tower0=new BasicTower();
 
 	public static void render(Graphics g){
 		for(int x=0;x<10;x++){

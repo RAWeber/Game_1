@@ -33,7 +33,6 @@ public class Screen extends JPanel implements Runnable {
 	public static int[][] map = new int[25][15];
 	public static Tower[][] towerMap = new Tower[25][15];
 	private Image[] terrain = new Image[100];
-	private String packageName="com/github/raweber/java17/game2/";
 	
 	private Level level;
 	private LevelFile levelFile;
@@ -41,6 +40,7 @@ public class Screen extends JPanel implements Runnable {
 	//TowerStore towerStore;
 	
 	public Screen() {
+		setSize();
 		thread.start();
 		player = new Player();
 		levelFile=new LevelFile();
@@ -72,6 +72,29 @@ public class Screen extends JPanel implements Runnable {
 				for(int y=0;y<15;y++){
 					g.drawImage(terrain[map[x][y]], TOWER_WIDTH+x*TOWER_WIDTH, TOWER_HEIGHT+y*TOWER_HEIGHT, TOWER_WIDTH,TOWER_HEIGHT, null);
 					g.drawRect(TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
+					/*if(towerMap[x][y]!=null){
+						towerMap[x][y].render(g, TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
+						g.setColor(Color.gray);
+						g.drawOval(TOWER_WIDTH*(x+1), TOWER_HEIGHT*(x+1), TOWER_WIDTH*towerMap[x][y].getRange(), TOWER_HEIGHT*towerMap[x][y].getRange());
+						g.setColor(new Color(64,64,64,64));
+						g.drawOval(TOWER_WIDTH*(x+1), TOWER_HEIGHT*(x+1), TOWER_WIDTH*towerMap[x][y].getRange(), TOWER_HEIGHT*towerMap[x][y].getRange());
+					}*/
+				}
+			}
+			
+			for(int x=0;x<25;x++){
+				for(int y=0;y<15;y++){
+					if(towerMap[x][y]!=null){
+						g.setColor(Color.gray);
+						g.drawOval((TOWER_WIDTH*(x+1))-(TOWER_WIDTH*towerMap[x][y].getRange()*2+TOWER_WIDTH)/2+TOWER_WIDTH/2, (TOWER_HEIGHT*(y+1))-(TOWER_HEIGHT*towerMap[x][y].getRange()*2+TOWER_HEIGHT)/2+TOWER_HEIGHT/2, TOWER_WIDTH*towerMap[x][y].getRange()*2+TOWER_WIDTH, TOWER_HEIGHT*towerMap[x][y].getRange()*2+TOWER_HEIGHT);
+						g.setColor(new Color(64,64,64,64));
+						g.fillOval((TOWER_WIDTH*(x+1))-(TOWER_WIDTH*towerMap[x][y].getRange()*2+TOWER_WIDTH)/2+TOWER_WIDTH/2, (TOWER_HEIGHT*(y+1))-(TOWER_HEIGHT*towerMap[x][y].getRange()*2+TOWER_HEIGHT)/2+TOWER_HEIGHT/2, TOWER_WIDTH*towerMap[x][y].getRange()*2+TOWER_WIDTH, TOWER_HEIGHT*towerMap[x][y].getRange()*2+TOWER_HEIGHT);
+						towerMap[x][y].render(g, TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
+					}
+				}
+			}
+			for(int x=0;x<25;x++){
+				for(int y=0;y<15;y++){
 					if(towerMap[x][y]!=null){
 						towerMap[x][y].render(g, TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
 					}
@@ -88,22 +111,11 @@ public class Screen extends JPanel implements Runnable {
 		g.setColor(Color.white);
 		g.drawString(fps+"", 10, 15);
 	}
-	
-	public void placeTower(int x, int y){
-		int xPos=(x-TOWER_WIDTH)/TOWER_WIDTH;
-		int yPos=(y-TOWER_HEIGHT)/TOWER_HEIGHT;
-		
-		if(xPos>25 || yPos>15){
-			
-		}else if(towerMap[xPos][yPos]==null && map[xPos][yPos]==0){
-			player.setMoney(player.getMoney()-TowerStore.towers[x*2+y].getCost());
-			towerMap[xPos][yPos]=TowerStore.towers[MouseHandler.holding-1];
-		}
-	}
 
 	public void run() {
 		System.out.println("[Success] Frame Created");
 		System.out.println("Width: "+Frame.WIDTH+" Height: "+Frame.HEIGHT);
+		System.out.println("Tower_Width: "+TOWER_WIDTH+" Tower_Height: "+TOWER_HEIGHT);
 
 		long lastFrame = System.currentTimeMillis();
 		int frames = 0;
@@ -125,6 +137,14 @@ public class Screen extends JPanel implements Runnable {
 				e.printStackTrace();
 			}
 
+		}
+	}
+	
+	private static void setSize(){
+		if(ratio<33.0/20.0){
+			TOWER_WIDTH=(int)(Frame.WIDTH/33);
+			TOWER_HEIGHT=(int)(Frame.HEIGHT*ratio/33);
+			System.out.println("Resized");
 		}
 	}
 	

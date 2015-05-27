@@ -6,13 +6,15 @@ public class Tower {
 
 	private String type;
 	private int cost;
+	private int range;
 	
-	public Tower(String type, int id, int cost){
+	public Tower(String type, int id, int cost, int range){
 		this.type=type;
 		if(TowerStore.towers[id]==null){
 			TowerStore.towers[id]=this;
 		}
 		this.cost=cost;
+		this.setRange(range);
 	}
 	
 	public void render(Graphics g, int x, int y) {
@@ -28,5 +30,13 @@ public class Tower {
 	}
 	public void setCost(int cost){
 		this.cost=cost;
+	}
+
+	public int getRange() {
+		return range;
+	}
+
+	public void setRange(int range) {
+		this.range = range;
 	}
 }

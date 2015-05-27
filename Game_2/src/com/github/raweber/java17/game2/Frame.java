@@ -12,6 +12,7 @@ public class Frame extends JFrame {
 
 	public static final int WIDTH=screenSize().width, HEIGHT=screenSize().height;
 	//public static final int WIDTH=1200, HEIGHT=WIDTH*9/16;
+	//public static final int WIDTH=1200, HEIGHT=1200;
 
 	
 	public Frame(){
