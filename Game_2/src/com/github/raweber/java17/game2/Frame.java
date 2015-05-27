@@ -29,6 +29,7 @@ public class Frame extends JFrame {
 		
 		this.addKeyListener(new KeyInput());
 		this.addMouseListener(new MouseInput());
+		this.addMouseMotionListener(new MouseInput());
 		
 		Screen screen = new Screen();
 		this.add(screen);
