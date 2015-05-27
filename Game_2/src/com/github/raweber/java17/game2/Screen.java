@@ -28,11 +28,11 @@ public class Screen extends JPanel implements Runnable {
 	
 	private static double ratio=(double)(Frame.WIDTH)/Frame.HEIGHT;
 	
-	public static int TOWER_WIDTH=(int)(Frame.WIDTH/ratio/25);
-	public static int TOWER_HEIGHT=(int)(Frame.HEIGHT/25);
+	public static int TOWER_WIDTH=(int)(Frame.WIDTH/ratio/20);
+	public static int TOWER_HEIGHT=(int)(Frame.HEIGHT/20);
 	
-	private int[][] map = new int[25][15];
-	private Tower[][] towerMap = new Tower[25][15];
+	public static int[][] map = new int[25][15];
+	public static Tower[][] towerMap = new Tower[25][15];
 	private Image[] terrain = new Image[100];
 	private String packageName="com/github/raweber/java17/game2/";
 	
@@ -75,6 +75,9 @@ public class Screen extends JPanel implements Runnable {
 				for(int y=0;y<15;y++){
 					g.drawImage(terrain[map[x][y]], TOWER_WIDTH+x*TOWER_WIDTH, TOWER_HEIGHT+y*TOWER_HEIGHT, TOWER_WIDTH,TOWER_HEIGHT, null);
 					g.drawRect(TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
+					if(towerMap[x][y]!=null){
+						towerMap[x][y].render(g, TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
+					}
 				}
 			}
 			
@@ -87,8 +90,6 @@ public class Screen extends JPanel implements Runnable {
 		}
 		g.setColor(Color.white);
 		g.drawString(fps+"", 10, 15);
-		
-
 	}
 	
 	public void placeTower(int x, int y){
