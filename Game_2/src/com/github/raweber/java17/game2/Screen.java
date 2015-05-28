@@ -25,10 +25,15 @@ public class Screen extends JPanel implements Runnable {
 	
 	public static STATE gameState = STATE.Game;
 	
-	private static double ratio=(double)(Frame.WIDTH)/Frame.HEIGHT;
+//	private static double ratio=(double)(SCREEN_WIDTH)/SCREEN_HEIGHT;
+//	public static int TOWER_WIDTH=(int)(SCREEN_WIDTH/ratio/20);
+//	public static int TOWER_HEIGHT=(int)(SCREEN_HEIGHT/20);
 	
-	public static int TOWER_WIDTH=(int)(Frame.WIDTH/ratio/20);
-	public static int TOWER_HEIGHT=(int)(Frame.HEIGHT/20);
+	public static int TOWER_SIZE;
+	
+	public static int SCREEN_WIDTH;
+	public static int SCREEN_HEIGHT;
+	public static int SCREEN_BORDER;
 	
 	public static int[][] map = new int[25][15];
 	public static Tower[][] towerMap = new Tower[25][15];
@@ -37,15 +42,18 @@ public class Screen extends JPanel implements Runnable {
 	private Level level;
 	private LevelFile levelFile;
 	public static Player player;
-	//TowerStore towerStore;
 	
-	public Screen() {
-		setSize();
+	public Screen(int w) {
 		thread.start();
+		
+		SCREEN_WIDTH=w;
+		SCREEN_HEIGHT=w*9/16;
+		SCREEN_BORDER=(Frame.HEIGHT-SCREEN_HEIGHT)/2;
+		TOWER_SIZE=SCREEN_HEIGHT/20;
+		
 		player = new Player();
 		levelFile=new LevelFile();
 		ImageHandler.addImages();
-		//towerStore=new TowerStore(this);
 		level=levelFile.getLevel("Level1");
 		level.findSpawnPoint();
 		map=level.getMap();
@@ -58,45 +66,52 @@ public class Screen extends JPanel implements Runnable {
 	}
 
 	public void paintComponent(Graphics g) {
-		g.clearRect(0, 0, Frame.WIDTH, Frame.HEIGHT);
+		g.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		
+		//Border
+		g.setColor(Color.black);
+		g.fillRect(0, 0, Frame.WIDTH, Frame.HEIGHT);
 		
 		if(gameState==STATE.Menu){
 			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, Frame.WIDTH, Frame.HEIGHT);
+			g.fillRect(0, SCREEN_BORDER, SCREEN_WIDTH, SCREEN_HEIGHT);
 		}else if(gameState==STATE.Game){
 			g.setColor(Color.DARK_GRAY);
-			g.fillRect(0, 0, Frame.WIDTH, Frame.HEIGHT);
+			g.fillRect(0, SCREEN_BORDER, SCREEN_WIDTH, SCREEN_HEIGHT);
 			g.setColor(Color.black);
 
+			//Grid
 			for(int x=0;x<25;x++){
 				for(int y=0;y<15;y++){
-					g.drawImage(terrain[map[x][y]], TOWER_WIDTH+x*TOWER_WIDTH, TOWER_HEIGHT+y*TOWER_HEIGHT, TOWER_WIDTH,TOWER_HEIGHT, null);
-					g.drawRect(TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
+					g.drawImage(terrain[map[x][y]], TOWER_SIZE+x*TOWER_SIZE, TOWER_SIZE+y*TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE,TOWER_SIZE, null);
+					g.drawRect(TOWER_SIZE+(x*TOWER_SIZE), TOWER_SIZE+(y*TOWER_SIZE)+SCREEN_BORDER, TOWER_SIZE, TOWER_SIZE);
 					/*if(towerMap[x][y]!=null){
-						towerMap[x][y].render(g, TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
+						towerMap[x][y].render(g, TOWER_SIZE+(x*TOWER_SIZE), TOWER_SIZE+(y*TOWER_SIZE), TOWER_SIZE, TOWER_SIZE);
 						g.setColor(Color.gray);
-						g.drawOval(TOWER_WIDTH*(x+1), TOWER_HEIGHT*(x+1), TOWER_WIDTH*towerMap[x][y].getRange(), TOWER_HEIGHT*towerMap[x][y].getRange());
+						g.drawOval(TOWER_SIZE*(x+1), TOWER_SIZE*(x+1), TOWER_SIZE*towerMap[x][y].getRange(), TOWER_SIZE*towerMap[x][y].getRange());
 						g.setColor(new Color(64,64,64,64));
-						g.drawOval(TOWER_WIDTH*(x+1), TOWER_HEIGHT*(x+1), TOWER_WIDTH*towerMap[x][y].getRange(), TOWER_HEIGHT*towerMap[x][y].getRange());
+						g.drawOval(TOWER_SIZE*(x+1), TOWER_SIZE*(x+1), TOWER_SIZE*towerMap[x][y].getRange(), TOWER_SIZE*towerMap[x][y].getRange());
 					}*/
 				}
 			}
 			
+			//Range
 			for(int x=0;x<25;x++){
 				for(int y=0;y<15;y++){
 					if(towerMap[x][y]!=null){
 						g.setColor(Color.gray);
-						g.drawOval((TOWER_WIDTH*(x+1))-(TOWER_WIDTH*towerMap[x][y].getRange()*2+TOWER_WIDTH)/2+TOWER_WIDTH/2, (TOWER_HEIGHT*(y+1))-(TOWER_HEIGHT*towerMap[x][y].getRange()*2+TOWER_HEIGHT)/2+TOWER_HEIGHT/2, TOWER_WIDTH*towerMap[x][y].getRange()*2+TOWER_WIDTH, TOWER_HEIGHT*towerMap[x][y].getRange()*2+TOWER_HEIGHT);
+						g.drawOval((TOWER_SIZE*(x+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2, (TOWER_SIZE*(y+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE);
 						g.setColor(new Color(64,64,64,64));
-						g.fillOval((TOWER_WIDTH*(x+1))-(TOWER_WIDTH*towerMap[x][y].getRange()*2+TOWER_WIDTH)/2+TOWER_WIDTH/2, (TOWER_HEIGHT*(y+1))-(TOWER_HEIGHT*towerMap[x][y].getRange()*2+TOWER_HEIGHT)/2+TOWER_HEIGHT/2, TOWER_WIDTH*towerMap[x][y].getRange()*2+TOWER_WIDTH, TOWER_HEIGHT*towerMap[x][y].getRange()*2+TOWER_HEIGHT);
-						towerMap[x][y].render(g, TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
+						g.fillOval((TOWER_SIZE*(x+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2, (TOWER_SIZE*(y+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE);
 					}
 				}
 			}
+			
+			//Towers
 			for(int x=0;x<25;x++){
 				for(int y=0;y<15;y++){
 					if(towerMap[x][y]!=null){
-						towerMap[x][y].render(g, TOWER_WIDTH+(x*TOWER_WIDTH), TOWER_HEIGHT+(y*TOWER_HEIGHT), TOWER_WIDTH, TOWER_HEIGHT);
+						towerMap[x][y].render(g, TOWER_SIZE+(x*TOWER_SIZE), TOWER_SIZE+(y*TOWER_SIZE)+SCREEN_BORDER, TOWER_SIZE, TOWER_SIZE);
 					}
 				}
 			}
@@ -105,7 +120,7 @@ public class Screen extends JPanel implements Runnable {
 			player.render(g);
 			
 			if(MouseHandler.holding!=0 && TowerStore.towers[MouseHandler.holding-1]!=null){
-				TowerStore.towers[MouseHandler.holding-1].render(g, MouseHandler.getMouseX()-(int)(TOWER_WIDTH/2), MouseHandler.getMouseY()-(int)(TOWER_HEIGHT/2),TOWER_WIDTH,TOWER_HEIGHT);
+				TowerStore.towers[MouseHandler.holding-1].render(g, MouseHandler.getMouseX()-(int)(TOWER_SIZE/2), MouseHandler.getMouseY()-(int)(TOWER_SIZE/2),TOWER_SIZE,TOWER_SIZE);
 			}
 		}
 		g.setColor(Color.white);
@@ -114,8 +129,8 @@ public class Screen extends JPanel implements Runnable {
 
 	public void run() {
 		System.out.println("[Success] Frame Created");
-		System.out.println("Width: "+Frame.WIDTH+" Height: "+Frame.HEIGHT);
-		System.out.println("Tower_Width: "+TOWER_WIDTH+" Tower_Height: "+TOWER_HEIGHT);
+		System.out.println("Width: "+SCREEN_WIDTH+" Height: "+SCREEN_HEIGHT);
+		System.out.println("TOWER_SIZE: "+TOWER_SIZE+" TOWER_SIZE: "+TOWER_SIZE);
 
 		long lastFrame = System.currentTimeMillis();
 		int frames = 0;
@@ -140,13 +155,13 @@ public class Screen extends JPanel implements Runnable {
 		}
 	}
 	
-	private static void setSize(){
-		if(ratio<33.0/20.0){
-			TOWER_WIDTH=(int)(Frame.WIDTH/33);
-			TOWER_HEIGHT=(int)(Frame.HEIGHT*ratio/33);
-			System.out.println("Resized");
-		}
-	}
+//	private static void setSize(){
+//		if(ratio<33.0/20.0){
+//			TOWER_WIDTH=(int)(SCREEN_WIDTH/33);
+//			TOWER_HEIGHT=(int)(SCREEN_HEIGHT*ratio/33);
+//			System.out.println("Resized");
+//		}
+//	}
 	
 	//public Player getPlayer(){
 		//return player;

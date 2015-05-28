@@ -26,13 +26,13 @@ public class MouseHandler {
 	public static void updateMouse(MouseEvent e){
 
 		if(mouseDown && holding==0){
-			if(e.getX()>=(int)(Screen.TOWER_WIDTH*6) && e.getX()<=(int)(Screen.TOWER_WIDTH*6+(10*Screen.TOWER_WIDTH))){
-				if(e.getY()>=Screen.TOWER_HEIGHT*17 && e.getY()<=Screen.TOWER_HEIGHT*19){
+			if(e.getX()>=(int)(Screen.TOWER_SIZE*6) && e.getX()<=(int)(Screen.TOWER_SIZE*6+(10*Screen.TOWER_SIZE))){
+				if(e.getY()>=Screen.TOWER_SIZE*17+Screen.SCREEN_BORDER && e.getY()<=Screen.TOWER_SIZE*19+Screen.SCREEN_BORDER){
 					for(int x=0;x<10;x++){
 						for(int y=0;y<2;y++){
 							if(TowerStore.towers[x*2+y]!=null){
-								if(e.getX()>=(int)(Screen.TOWER_WIDTH*6+(x*Screen.TOWER_WIDTH)) && e.getX()<=(int)(Screen.TOWER_WIDTH*6+(x*Screen.TOWER_WIDTH))+Screen.TOWER_WIDTH){
-									if(e.getY()>=Screen.TOWER_HEIGHT*17+(y*Screen.TOWER_HEIGHT) && e.getY()<=Screen.TOWER_HEIGHT*19+(y*Screen.TOWER_HEIGHT)){
+								if(e.getX()>=(int)(Screen.TOWER_SIZE*6+(x*Screen.TOWER_SIZE)) && e.getX()<=(int)(Screen.TOWER_SIZE*6+(x*Screen.TOWER_SIZE))+Screen.TOWER_SIZE){
+									if(e.getY()>=Screen.TOWER_SIZE*17+(y*Screen.TOWER_SIZE)+Screen.SCREEN_BORDER && e.getY()<=Screen.TOWER_SIZE*19+(y*Screen.TOWER_SIZE)+Screen.SCREEN_BORDER){
 										if(Screen.player.getMoney()>=TowerStore.towers[x*2+y].getCost()){
 											holding=x*2+y+1;
 										}
@@ -47,8 +47,8 @@ public class MouseHandler {
 	}
 	
 	public static void placeTower(int x, int y){
-		int xPos=x/Screen.TOWER_WIDTH-1;
-		int yPos=y/Screen.TOWER_HEIGHT-1;
+		int xPos=x/Screen.TOWER_SIZE-1;
+		int yPos=(y-Screen.SCREEN_BORDER)/Screen.TOWER_SIZE-1;
 		
 		if(xPos>=0 && xPos<25 && yPos>=0 && yPos<15){
 

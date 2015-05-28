@@ -19,12 +19,12 @@ public class Player{
 	
 	public void render(Graphics g){
 		g.setColor(Color.GRAY);
-		g.fillRect(Screen.TOWER_WIDTH, Screen.TOWER_HEIGHT*17, Screen.TOWER_WIDTH*4, Screen.TOWER_HEIGHT*2);
+		g.fillRect(Screen.TOWER_SIZE, Screen.TOWER_SIZE*17+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*4, Screen.TOWER_SIZE*2);
 		g.setColor(Color.BLACK);
-		g.drawRect(Screen.TOWER_WIDTH, Screen.TOWER_HEIGHT*17, Screen.TOWER_WIDTH*4, Screen.TOWER_HEIGHT);
-		g.drawRect(Screen.TOWER_WIDTH, Screen.TOWER_HEIGHT*18, Screen.TOWER_WIDTH*4, Screen.TOWER_HEIGHT);
-		g.drawString("Health: "+health, Screen.TOWER_WIDTH+Screen.TOWER_WIDTH/4, Screen.TOWER_HEIGHT*17+Screen.TOWER_HEIGHT/2);
-		g.drawString("Money: "+money, Screen.TOWER_WIDTH+Screen.TOWER_WIDTH/4, Screen.TOWER_HEIGHT*18+Screen.TOWER_HEIGHT/2);
+		g.drawRect(Screen.TOWER_SIZE, Screen.TOWER_SIZE*17+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*4, Screen.TOWER_SIZE);
+		g.drawRect(Screen.TOWER_SIZE, Screen.TOWER_SIZE*18+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*4, Screen.TOWER_SIZE);
+		g.drawString("Health: "+health, Screen.TOWER_SIZE+Screen.TOWER_SIZE/4, Screen.TOWER_SIZE*17+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER);
+		g.drawString("Money: "+money, Screen.TOWER_SIZE+Screen.TOWER_SIZE/4, Screen.TOWER_SIZE*18+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER);
 	}
 	
 	public int getMoney(){

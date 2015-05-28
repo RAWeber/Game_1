@@ -39,4 +39,8 @@ public class Tower {
 	public void setRange(int range) {
 		this.range = range;
 	}
+	
+	public String toString(){
+		return type;
+	}
 }

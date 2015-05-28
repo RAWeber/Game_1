@@ -32,7 +32,7 @@ public class Frame extends JFrame {
 		this.addMouseListener(new MouseInput());
 		this.addMouseMotionListener(new MouseInput());
 		
-		Screen screen = new Screen();
+		Screen screen = new Screen(this.getWidth());
 		this.add(screen);
 		
 		this.setVisible(true);

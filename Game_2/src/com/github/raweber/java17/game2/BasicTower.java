@@ -6,8 +6,4 @@ public class BasicTower extends Tower {
 		super("BasicTower", 0, 50, 3);
 
 	}
-	
-	public String toString(){
-		return"BasicTower";
-	}
 }
