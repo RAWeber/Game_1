@@ -7,4 +7,7 @@ public class KeyHandler {
 	public static void keySpace(){
 		Screen.gameState=Screen.STATE.Game;
 	}
+	public static void keyEnter(){
+		Screen.wave.nextWave();
+	}
 }

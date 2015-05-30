@@ -11,6 +11,7 @@ import java.awt.Image;
 import java.awt.image.CropImageFilter;
 import java.awt.image.FilteredImageSource;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public class Screen extends JPanel implements Runnable {
@@ -39,24 +40,34 @@ public class Screen extends JPanel implements Runnable {
 	public static Tower[][] towerMap = new Tower[25][15];
 	private Image[] terrain = new Image[100];
 	
-	private Level level;
+	public static EnemyMove[] enemyMap = new EnemyMove[100];
+	private int enemies = 0;
+	public static Wave wave;
+	private EnemyAI enemyAI;
+	
+	public static Level level;
 	private LevelFile levelFile;
 	public static Player player;
 	
 	public Screen(int w) {
-		thread.start();
-		
 		SCREEN_WIDTH=w;
 		SCREEN_HEIGHT=w*9/16;
 		SCREEN_BORDER=(Frame.HEIGHT-SCREEN_HEIGHT)/2;
 		TOWER_SIZE=SCREEN_HEIGHT/20;
 		
-		player = new Player();
 		levelFile=new LevelFile();
-		ImageHandler.addImages();
 		level=levelFile.getLevel("Level1");
 		level.findSpawnPoint();
 		map=level.getMap();
+		
+		wave=new Wave();
+		
+		player = new Player();
+		ImageHandler.addImages();
+		
+		enemyAI=new EnemyAI(level);
+		
+		thread.start();		
 		
 		for (int y=0;y<10;y++){
 			for(int x=0;x<10;x++){
@@ -85,13 +96,6 @@ public class Screen extends JPanel implements Runnable {
 				for(int y=0;y<15;y++){
 					g.drawImage(terrain[map[x][y]], TOWER_SIZE+x*TOWER_SIZE, TOWER_SIZE+y*TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE,TOWER_SIZE, null);
 					g.drawRect(TOWER_SIZE+(x*TOWER_SIZE), TOWER_SIZE+(y*TOWER_SIZE)+SCREEN_BORDER, TOWER_SIZE, TOWER_SIZE);
-					/*if(towerMap[x][y]!=null){
-						towerMap[x][y].render(g, TOWER_SIZE+(x*TOWER_SIZE), TOWER_SIZE+(y*TOWER_SIZE), TOWER_SIZE, TOWER_SIZE);
-						g.setColor(Color.gray);
-						g.drawOval(TOWER_SIZE*(x+1), TOWER_SIZE*(x+1), TOWER_SIZE*towerMap[x][y].getRange(), TOWER_SIZE*towerMap[x][y].getRange());
-						g.setColor(new Color(64,64,64,64));
-						g.drawOval(TOWER_SIZE*(x+1), TOWER_SIZE*(x+1), TOWER_SIZE*towerMap[x][y].getRange(), TOWER_SIZE*towerMap[x][y].getRange());
-					}*/
 				}
 			}
 			
@@ -116,6 +120,14 @@ public class Screen extends JPanel implements Runnable {
 				}
 			}
 			
+			//Enemies
+			for(int i=0; i<enemyMap.length;i++){
+				if(enemyMap[i]!=null){
+					g.drawImage(new ImageIcon("res/BasicEnemy.png").getImage(), (int)enemyMap[i].getXPos()+TOWER_SIZE, (int)enemyMap[i].getYPos()+TOWER_SIZE+ SCREEN_BORDER, TOWER_SIZE,TOWER_SIZE, null);
+					//enemyMap[i].render(g, enemyMap[i].getXPos()+TOWER_SIZE, enemyMap[i].getYPos()+TOWER_SIZE+ SCREEN_BORDER, TOWER_SIZE,TOWER_SIZE);
+				}
+			}
+			
 			TowerStore.render(g);		
 			player.render(g);
 			
@@ -124,19 +136,20 @@ public class Screen extends JPanel implements Runnable {
 			}
 		}
 		g.setColor(Color.white);
-		g.drawString(fps+"", 10, 15);
+		g.drawString(fps+"", 20, 20);
 	}
 
 	public void run() {
 		System.out.println("[Success] Frame Created");
 		System.out.println("Width: "+SCREEN_WIDTH+" Height: "+SCREEN_HEIGHT);
-		System.out.println("TOWER_SIZE: "+TOWER_SIZE+" TOWER_SIZE: "+TOWER_SIZE);
+		System.out.println("Tower Size: "+TOWER_SIZE);
 
 		long lastFrame = System.currentTimeMillis();
 		int frames = 0;
 
 		while (true) {
 			repaint();
+			update();
 			
 			frames++;
 			
@@ -152,6 +165,25 @@ public class Screen extends JPanel implements Runnable {
 				e.printStackTrace();
 			}
 
+		}
+	}
+	
+	public void update(){
+		enemyUpdate();
+		
+		if(wave.isWaveSpawning()){
+			wave.spawnEnemies();
+		}
+	}
+	
+	public void enemyUpdate(){
+		for(int i=0; i<enemyMap.length;i++){
+			if(enemyMap[i]!=null){
+				if(!enemyMap[i].isAttacking()){
+					EnemyAI.moveAI.move(enemyMap[i]);
+				}
+				enemyMap[i].update();
+			}
 		}
 	}
 	

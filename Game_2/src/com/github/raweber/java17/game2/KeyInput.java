@@ -18,6 +18,7 @@ private boolean[] keyDown = new boolean[4];
 		
 		if(key == KeyEvent.VK_ESCAPE) KeyHandler.keyEscape();
 		if(key == KeyEvent.VK_SPACE) KeyHandler.keySpace();
+		if(key == KeyEvent.VK_ENTER)KeyHandler.keyEnter();
 		
 		/*for(int i=0;i<handler.object.size();i++){
 			GameObject tempObject=handler.object.get(i);

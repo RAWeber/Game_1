@@ -4,13 +4,13 @@ public class Level {
 
 	private int[][] map;
 	
-	SpawnPoint spawnPoint;
+	private SpawnPoint spawnPoint;
 	
 	public void findSpawnPoint(){
 		for(int x=0;x<map.length;x++){
 			for(int y=0;y<map[0].length;y++){
 				if(map[x][y]==2){
-					spawnPoint = new SpawnPoint(x,y);
+					setSpawnPoint(new SpawnPoint(x,y));
 				}
 			}
 		}
@@ -35,5 +35,13 @@ public class Level {
 			}
 			System.out.println();
 		}
+	}
+
+	public SpawnPoint getSpawnPoint() {
+		return spawnPoint;
+	}
+
+	public void setSpawnPoint(SpawnPoint spawnPoint) {
+		this.spawnPoint = spawnPoint;
 	}
 }
