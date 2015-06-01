@@ -2,7 +2,7 @@ package com.github.raweber.java17.game2;
 
 import java.awt.Graphics;
 
-public class Tower {
+public class Tower implements Cloneable{
 
 	private String type;
 	private int cost;
@@ -15,6 +15,15 @@ public class Tower {
 		}
 		this.cost=cost;
 		this.setRange(range);
+	}
+	
+	public Object clone(){
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public void render(Graphics g, int x, int y) {

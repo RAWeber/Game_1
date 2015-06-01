@@ -55,7 +55,7 @@ public class MouseHandler {
 			if(Screen.towerMap[xPos][yPos]==null && Screen.map[xPos][yPos]==0){
 				Screen.player.setMoney(Screen.player.getMoney()-TowerStore.towers[holding-1].getCost());
 				System.out.println("You bought a "+TowerStore.towers[holding-1]+" for "+TowerStore.towers[holding-1].getCost()+" coins!");
-				Screen.towerMap[xPos][yPos]=TowerStore.towers[MouseHandler.holding-1];
+				Screen.towerMap[xPos][yPos]=(Tower)TowerStore.towers[MouseHandler.holding-1].clone();
 			}
 		}
 	}
