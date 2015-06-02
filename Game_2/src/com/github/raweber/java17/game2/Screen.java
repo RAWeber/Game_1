@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.CropImageFilter;
 import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageProducer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -48,6 +49,8 @@ public class Screen extends JPanel implements Runnable {
 	public static Level level;
 	private LevelFile levelFile;
 	public static Player player;
+	
+	private double interpolation = 0;
 	
 	public Screen(int w) {
 		SCREEN_WIDTH=w;
@@ -90,7 +93,7 @@ public class Screen extends JPanel implements Runnable {
 			g.setColor(Color.DARK_GRAY);
 			g.fillRect(0, SCREEN_BORDER, SCREEN_WIDTH, SCREEN_HEIGHT);
 			g.setColor(Color.black);
-
+			
 			//Grid
 			for(int x=0;x<25;x++){
 				for(int y=0;y<15;y++){
@@ -146,30 +149,36 @@ public class Screen extends JPanel implements Runnable {
 
 		long lastFrame = System.currentTimeMillis();
 		int frames = 0;
+		
+		final int TICKS_PER_SECOND = 25;
+		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+		final int MAX_FRAMESKIP = 5;
 
+		double next_game_tick = System.currentTimeMillis();
+	    int loops;
+	    
 		while (true) {
+			loops = 0;
+			while (System.currentTimeMillis() > next_game_tick && loops < MAX_FRAMESKIP) {
+				update();
+				next_game_tick += SKIP_TICKS;
+				loops++;
+				frames++;
+					
+				if(System.currentTimeMillis()-1000>=lastFrame){
+					fps=frames;
+					frames=0;
+					lastFrame=System.currentTimeMillis();
+				}
+			}
+			interpolation = (System.currentTimeMillis() + SKIP_TICKS - next_game_tick)/ (double) SKIP_TICKS;
 			repaint();
-			update();
-			
-			frames++;
-			
-			if(System.currentTimeMillis()-1000>=lastFrame){
-				fps=frames;
-				frames=0;
-				lastFrame=System.currentTimeMillis();
-			}
-
-			try {
-				Thread.sleep(2);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
 		}
 	}
 	
 	public void update(){
 		enemyUpdate();
+		towerUpdate();
 		
 		if(wave.isWaveSpawning()){
 			wave.spawnEnemies();
@@ -182,7 +191,17 @@ public class Screen extends JPanel implements Runnable {
 				if(!enemyMap[i].isAttacking()){
 					EnemyAI.moveAI.move(enemyMap[i]);
 				}
-				enemyMap[i].update();
+				enemyMap[i]=enemyMap[i].update();
+			}
+		}
+	}
+	
+	public void towerUpdate(){
+		for(int x=0;x<25;x++){
+			for(int y=0;y<15;y++){
+				if(towerMap[x][y]!=null){
+					towerMap[x][y].towerAttack(enemyMap, x,y);
+				}
 			}
 		}
 	}

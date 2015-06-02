@@ -25,7 +25,6 @@ public class EnemyMove {
 		
 		this.setAttack(false);
 		this.health=enemy.getHealth();
-		
 	}
 	
 	public void render(Graphics g, int x, int y) {
@@ -37,11 +36,10 @@ public class EnemyMove {
 	}
 	
 	public EnemyMove update(){
-		EnemyMove currentEnemy = this;
-		if(currentEnemy.health<=0){
+		if(health<=0){
 			return null;
 		}
-		return currentEnemy;
+		return this;
 	}
 
 	public double getXPos() {
@@ -90,5 +88,14 @@ public class EnemyMove {
 
 	public void setAttack(boolean attacking) {
 		this.attacking = attacking;
+	}
+	
+
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
 	}
 }
