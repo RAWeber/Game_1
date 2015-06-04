@@ -8,6 +8,6 @@ public class KeyHandler {
 		Screen.gameState=Screen.STATE.Game;
 	}
 	public static void keyEnter(){
-		Screen.wave.nextWave();
+		MouseHandler.startButton();
 	}
 }

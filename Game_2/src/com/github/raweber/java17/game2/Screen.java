@@ -1,18 +1,14 @@
 package com.github.raweber.java17.game2;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
-
-
-
-
-
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.CropImageFilter;
 import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageProducer;
+import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public class Screen extends JPanel implements Runnable {
@@ -22,14 +18,10 @@ public class Screen extends JPanel implements Runnable {
 	private Thread thread = new Thread(this);
 	private int fps=0;
 	public enum STATE {
-		Menu, Game;
+		Menu, Game, GameOver;
 	};
 	
 	public static STATE gameState = STATE.Game;
-	
-//	private static double ratio=(double)(SCREEN_WIDTH)/SCREEN_HEIGHT;
-//	public static int TOWER_WIDTH=(int)(SCREEN_WIDTH/ratio/20);
-//	public static int TOWER_HEIGHT=(int)(SCREEN_HEIGHT/20);
 	
 	public static int TOWER_SIZE;
 	
@@ -37,18 +29,20 @@ public class Screen extends JPanel implements Runnable {
 	public static int SCREEN_HEIGHT;
 	public static int SCREEN_BORDER;
 	
+	public static int speed;
+	
 	public static int[][] map = new int[25][15];
 	public static Tower[][] towerMap = new Tower[25][15];
 	private Image[] terrain = new Image[100];
 	
-	public static EnemyMove[] enemyMap = new EnemyMove[100];
-	private int enemies = 0;
+	public static ArrayList<EnemyMove> enemyMap= new ArrayList<EnemyMove>();
 	public static Wave wave;
 	private EnemyAI enemyAI;
 	
 	public static Level level;
 	private LevelFile levelFile;
 	public static Player player;
+	public static Tower selectedTower;
 	
 	private double interpolation = 0;
 	
@@ -58,12 +52,15 @@ public class Screen extends JPanel implements Runnable {
 		SCREEN_BORDER=(Frame.HEIGHT-SCREEN_HEIGHT)/2;
 		TOWER_SIZE=SCREEN_HEIGHT/20;
 		
+		speed=1;
+		
 		levelFile=new LevelFile();
-		level=levelFile.getLevel("Level1");
+		level=levelFile.getLevel("Level2");
 		level.findSpawnPoint();
 		map=level.getMap();
 		
 		wave=new Wave();
+		
 		
 		player = new Player();
 		ImageHandler.addImages();
@@ -102,16 +99,9 @@ public class Screen extends JPanel implements Runnable {
 				}
 			}
 			
-			//Range
-			for(int x=0;x<25;x++){
-				for(int y=0;y<15;y++){
-					if(towerMap[x][y]!=null){
-						g.setColor(Color.gray);
-						g.drawOval((TOWER_SIZE*(x+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2, (TOWER_SIZE*(y+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE);
-						g.setColor(new Color(64,64,64,64));
-						g.fillOval((TOWER_SIZE*(x+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2, (TOWER_SIZE*(y+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE);
-					}
-				}
+			//Enemies
+			for(int i=0; i<enemyMap.size();i++){
+				enemyMap.get(i).render(g, (int)enemyMap.get(i).getXPos()+TOWER_SIZE, (int)enemyMap.get(i).getYPos()+TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE,TOWER_SIZE);
 			}
 			
 			//Towers
@@ -119,23 +109,96 @@ public class Screen extends JPanel implements Runnable {
 				for(int y=0;y<15;y++){
 					if(towerMap[x][y]!=null){
 						towerMap[x][y].render(g, TOWER_SIZE+(x*TOWER_SIZE), TOWER_SIZE+(y*TOWER_SIZE)+SCREEN_BORDER, TOWER_SIZE, TOWER_SIZE);
+						if(towerMap[x][y].getProjectiles().length==0){
+							if(towerMap[x][y].getTarget()!=null){
+								g.setColor(Color.red);
+								g.drawLine(TOWER_SIZE*3/2+(x*TOWER_SIZE), TOWER_SIZE*3/2+(y*TOWER_SIZE)+SCREEN_BORDER, TOWER_SIZE*3/2+(int)towerMap[x][y].getTarget().getXPos(), TOWER_SIZE*3/2+(int)towerMap[x][y].getTarget().getYPos()+SCREEN_BORDER);
+							}
+						}else{
+							Graphics2D g2d = (Graphics2D)g;
+							Projectile[] projectiles=towerMap[x][y].getProjectiles();
+							for(int i=0;i<projectiles.length;i++){
+								if(projectiles[i]!=null){
+									double rotation=Math.PI/2+projectiles[i].getDirection();
+									double pX = projectiles[i].getX()+TOWER_SIZE/4;
+									double pY = projectiles[i].getY()+TOWER_SIZE/4;
+									g2d.rotate(rotation, pX ,pY);
+									projectiles[i].render(g, (int)projectiles[i].getX(), (int)projectiles[i].getY(), TOWER_SIZE/2, TOWER_SIZE/2);
+									g2d.rotate(-rotation, pX ,pY);
+								}
+							}
+
+						}
+						if(towerMap[x][y]==selectedTower){
+							g.setColor(Color.gray);
+							g.drawOval((TOWER_SIZE*(x+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2, (TOWER_SIZE*(y+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE);
+							g.setColor(new Color(64,64,64,64));
+							g.fillOval((TOWER_SIZE*(x+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2, (TOWER_SIZE*(y+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE);
+						}
 					}
 				}
 			}
 			
-			//Enemies
-			for(int i=0; i<enemyMap.length;i++){
-				if(enemyMap[i]!=null){
-					g.drawImage(new ImageIcon("res/BasicEnemy.png").getImage(), (int)enemyMap[i].getXPos()+TOWER_SIZE, (int)enemyMap[i].getYPos()+TOWER_SIZE+ SCREEN_BORDER, TOWER_SIZE,TOWER_SIZE, null);
-					//enemyMap[i].render(g, enemyMap[i].getXPos()+TOWER_SIZE, enemyMap[i].getYPos()+TOWER_SIZE+ SCREEN_BORDER, TOWER_SIZE,TOWER_SIZE);
-				}
+			//selectedTower
+			g.setColor(Color.black);
+			g.drawImage(terrain[map[0][0]], TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*4, null);
+			if(selectedTower!=null){
+				selectedTower.render(g, TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*4);
+			}
+			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*4);
+			
+			//description
+			g.setColor(Color.gray);
+			g.fillRect(TOWER_SIZE*31,TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*10);
+			g.setColor(Color.black);
+			g.drawRect(TOWER_SIZE*31,TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*10);
+			
+			//strategies
+			g.setColor(Color.gray);
+			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*5+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
+			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*7+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
+			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*8+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
+			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*10+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
+			g.setColor(Color.black);
+			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*5+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
+			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*7+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
+			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*8+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
+			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*10+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
+			
+			//upgrades
+			g.setColor(Color.gray);
+			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*12+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*2);
+			g.fillRect(TOWER_SIZE*31, TOWER_SIZE*12+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*2);
+			g.setColor(Color.black);
+			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*12+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*2);
+			g.drawRect(TOWER_SIZE*31, TOWER_SIZE*12+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*2);
+			
+			//Options
+			
+			//Startbutton
+			g.setFont(new Font(g.getFont().getName(), Font.PLAIN, Screen.TOWER_SIZE*3/2));
+			g.setColor(Color.cyan);
+			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*16+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*8+TOWER_SIZE/2, TOWER_SIZE*3);
+			g.setColor(Color.black);
+			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*16+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*8+TOWER_SIZE/2, TOWER_SIZE*3);
+			if(enemyMap.size()==0){
+				g.drawString("Next Wave", TOWER_SIZE*27, TOWER_SIZE*18+TOWER_SIZE/2+SCREEN_BORDER);
+			}else if(speed==1){
+				g.drawString("Speed X4", TOWER_SIZE*27, TOWER_SIZE*18+TOWER_SIZE/2+SCREEN_BORDER);
+			}else{
+				g.drawString("Speed X1", TOWER_SIZE*27, TOWER_SIZE*18+TOWER_SIZE/2+SCREEN_BORDER);
 			}
 			
 			TowerStore.render(g);		
 			player.render(g);
 			
 			if(MouseHandler.holding!=0 && TowerStore.towers[MouseHandler.holding-1]!=null){
-				TowerStore.towers[MouseHandler.holding-1].render(g, MouseHandler.getMouseX()-(int)(TOWER_SIZE/2), MouseHandler.getMouseY()-(int)(TOWER_SIZE/2),TOWER_SIZE,TOWER_SIZE);
+				int i=MouseHandler.holding-1;
+				TowerStore.towers[i].render(g, MouseHandler.getMouseX()-(int)(TOWER_SIZE/2), MouseHandler.getMouseY()-(int)(TOWER_SIZE/2),TOWER_SIZE,TOWER_SIZE);
+				if(MouseHandler.getMouseX()>TOWER_SIZE && MouseHandler.getMouseX()<TOWER_SIZE*26 && MouseHandler.getMouseY()>TOWER_SIZE+SCREEN_BORDER && MouseHandler.getMouseY()<TOWER_SIZE*16+SCREEN_BORDER){
+					g.setColor(Color.gray);
+					g.drawOval((MouseHandler.getMouseX())-(TOWER_SIZE*TowerStore.towers[i].getRange()*2+TOWER_SIZE)/2, (MouseHandler.getMouseY())-(TOWER_SIZE*TowerStore.towers[i].getRange()*2+TOWER_SIZE)/2, TOWER_SIZE*TowerStore.towers[i].getRange()*2+TOWER_SIZE, TOWER_SIZE*TowerStore.towers[i].getRange()*2+TOWER_SIZE);
+				}
 			}
 		}
 		g.setColor(Color.white);
@@ -180,18 +243,19 @@ public class Screen extends JPanel implements Runnable {
 		enemyUpdate();
 		towerUpdate();
 		
+		
 		if(wave.isWaveSpawning()){
 			wave.spawnEnemies();
 		}
 	}
 	
 	public void enemyUpdate(){
-		for(int i=0; i<enemyMap.length;i++){
-			if(enemyMap[i]!=null){
-				if(!enemyMap[i].isAttacking()){
-					EnemyAI.moveAI.move(enemyMap[i]);
-				}
-				enemyMap[i]=enemyMap[i].update();
+		for(int i=0; i<enemyMap.size();i++){
+			if(!enemyMap.get(i).isAttacking()){
+				EnemyAI.moveAI.move(enemyMap.get(i));
+			}
+			if(enemyMap.get(i).update()){
+				enemyMap.remove(i);
 			}
 		}
 	}
@@ -201,20 +265,22 @@ public class Screen extends JPanel implements Runnable {
 			for(int y=0;y<15;y++){
 				if(towerMap[x][y]!=null){
 					towerMap[x][y].towerAttack(enemyMap, x,y);
+					if(towerMap[x][y].getProjectiles().length!=0){
+						projectileUpdate(towerMap[x][y]);
+					}
 				}
 			}
 		}
 	}
 	
-//	private static void setSize(){
-//		if(ratio<33.0/20.0){
-//			TOWER_WIDTH=(int)(SCREEN_WIDTH/33);
-//			TOWER_HEIGHT=(int)(SCREEN_HEIGHT*ratio/33);
-//			System.out.println("Resized");
-//		}
-//	}
-	
-	//public Player getPlayer(){
-		//return player;
-	//}
+	public void projectileUpdate(Tower tower){
+		for(int i=0;i<tower.getProjectiles().length;i++){
+			if(tower.getProjectiles()[i]!=null){
+				tower.getProjectiles()[i].update();
+				if(tower.getProjectiles()[i].getTarget()==null){
+					tower.getProjectiles()[i]=null;
+				}
+			}
+		}
+	}
 }

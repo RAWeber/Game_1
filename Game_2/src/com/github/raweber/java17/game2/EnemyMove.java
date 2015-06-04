@@ -7,7 +7,7 @@ public class EnemyMove {
 	private Enemy enemy;
 	
 	private boolean attacking;
-	private int health;
+	private double health;
 	
 	private double xPos;
 	private double yPos;
@@ -35,11 +35,12 @@ public class EnemyMove {
 		g.drawImage(ImageHandler.getIcon(enemy.getType()), x, y, w, h, null);
 	}
 	
-	public EnemyMove update(){
+	public boolean update(){
 		if(health<=0){
-			return null;
+			Screen.player.setMoney(Screen.player.getMoney()+enemy.getReward());
+			return true;
 		}
-		return this;
+		return false;
 	}
 
 	public double getXPos() {
@@ -91,11 +92,11 @@ public class EnemyMove {
 	}
 	
 
-	public int getHealth() {
+	public double getHealth() {
 		return health;
 	}
 
-	public void setHealth(int health) {
+	public void setHealth(double health) {
 		this.health = health;
 	}
 }

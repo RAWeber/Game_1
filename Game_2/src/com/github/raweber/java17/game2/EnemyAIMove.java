@@ -26,11 +26,34 @@ public class EnemyAIMove extends EnemyAI{
 		}else{
 			double xPos=enemy.getXPos()/Screen.TOWER_SIZE;
 			double yPos=enemy.getYPos()/Screen.TOWER_SIZE;
-			
-			if(xPos>enemy.getRoutePosX()) enemy.setXPos(enemy.getXPos()-enemy.getEnemy().getSpeed());
-			if(xPos<enemy.getRoutePosX()) enemy.setXPos(enemy.getXPos()+enemy.getEnemy().getSpeed());
-			if(yPos>enemy.getRoutePosY()) enemy.setYPos(enemy.getYPos()-enemy.getEnemy().getSpeed());
-			if(yPos<enemy.getRoutePosY()) enemy.setYPos(enemy.getYPos()+enemy.getEnemy().getSpeed());
+			//move left
+			if(xPos>enemy.getRoutePosX()){
+				enemy.setXPos(enemy.getXPos()-enemy.getEnemy().getSpeed()*Screen.speed);
+				if(enemy.getXPos()<enemy.getRoutePosX()*Screen.TOWER_SIZE){
+					enemy.setXPos(enemy.getRoutePosX()*Screen.TOWER_SIZE);
+				}
+			}
+			//move right
+			if(xPos<enemy.getRoutePosX()){
+				enemy.setXPos(enemy.getXPos()+enemy.getEnemy().getSpeed()*Screen.speed);
+				if(enemy.getXPos()>enemy.getRoutePosX()*Screen.TOWER_SIZE){
+					enemy.setXPos(enemy.getRoutePosX()*Screen.TOWER_SIZE);
+				}
+			}
+			//move up
+			if(yPos>enemy.getRoutePosY()){
+				enemy.setYPos(enemy.getYPos()-enemy.getEnemy().getSpeed()*Screen.speed);
+				if(enemy.getYPos()<enemy.getRoutePosY()*Screen.TOWER_SIZE){
+					enemy.setYPos(enemy.getRoutePosY()*Screen.TOWER_SIZE);
+				}
+			}
+			//move down
+			if(yPos<enemy.getRoutePosY()){
+				enemy.setYPos(enemy.getYPos()+enemy.getEnemy().getSpeed()*Screen.speed);
+				if(enemy.getYPos()>enemy.getRoutePosY()*Screen.TOWER_SIZE){
+					enemy.setYPos(enemy.getRoutePosY()*Screen.TOWER_SIZE);
+				}
+			}
 		}
 	}
 	

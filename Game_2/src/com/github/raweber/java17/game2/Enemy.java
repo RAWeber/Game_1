@@ -5,34 +5,32 @@ public class Enemy {
 
 	public static final Enemy[] enemyList = new Enemy[10];
 	
-	public static final Enemy basicEnemy = new BasicEnemy(0, 1, 10, 16, 15, 3, 15);
-	public static final Enemy strongEnemy = new StrongEnemy(1, 3, 20, 8, 10, 4, 30);
-	public static final Enemy fastEnemy = new FastEnemy(2, 2, 15, 32, 25, 1, 10);
+	private static final Enemy basicEnemy = new BasicEnemy(0, 1, 15, 6, 15, 3, 10);
+	private static final Enemy strongEnemy = new StrongEnemy(1, 2, 25, 4, 10, 4, 30);
+	private static final Enemy fastEnemy = new FastEnemy(2, 1, 10, 15, 15, 1, 15);
 	
 	private String type;
 	private int reward;
 	private double speed;
 	private double attackSpeed;
 	private int damage;
-	private int health;
+	private double health;
 	private int value;
 	private int id;
 	
-	public Enemy(String type, int id, int value, int reward, double speed, double attackSpeed, int damage, int health){
+	public Enemy(String type, int id, int value, int reward, double speed, double attackSpeed, int damage, double health){
 		if(enemyList[id]==null){
 			enemyList[id]=this;
 		}
 		this.type=type;
 		this.id=id;
 		this.reward=reward;
-		this.speed=(double)Screen.TOWER_SIZE/speed;
+		this.speed=speed*Screen.TOWER_SIZE/50;
 		this.attackSpeed=attackSpeed;
 		this.damage=damage;
 		this.health=health;
 		this.value=value;
 	}
-	
-
 
 	public int getReward() {
 		return reward;
@@ -66,11 +64,11 @@ public class Enemy {
 		this.damage = damage;
 	}
 
-	public int getHealth() {
+	public double getHealth() {
 		return health;
 	}
 
-	public void setHealth(int health) {
+	public void setHealth(double health) {
 		this.health = health;
 	}
 
@@ -82,27 +80,15 @@ public class Enemy {
 		this.type = type;
 	}
 
-
-
 	public int getValue() {
 		return value;
 	}
-
-
 
 	public void setValue(int value) {
 		this.value = value;
 	}
 
-
-
 	public int getId() {
 		return id;
-	}
-
-
-
-	public void setId(int id) {
-		this.id = id;
 	}
 }

@@ -11,6 +11,8 @@ public class TowerStore {
 	private static BasicTower tower0=new BasicTower();
 	@SuppressWarnings("unused")
 	private static BombTower tower1=new BombTower();
+	@SuppressWarnings("unused")
+	private static AcidTower tower2=new AcidTower();
 
 	public static void render(Graphics g){
 		for(int x=0;x<10;x++){

@@ -13,9 +13,12 @@ public class ImageHandler {
 		images.put("BasicTower", new ImageIcon("res/BasicTower.png"));
 		images.put("BombTower", new ImageIcon("res/BombTower.png"));
 		images.put("AcidTower", new ImageIcon("res/AcidTower.png"));
+		images.put("FlameTower", new ImageIcon("res/FlameTower.png"));
 		images.put("BasicEnemy", new ImageIcon("res/BasicEnemy.png"));
 		images.put("StrongEnemy", new ImageIcon("res/StrongEnemy.png"));
 		images.put("FastEnemy", new ImageIcon("res/FastEnemy.png"));
+		images.put("BombProjectile", new ImageIcon("res/BombProjectile.png"));
+		images.put("BasicProjectile", new ImageIcon("res/BasicProjectile.png"));
 		images.put("Terrain", new ImageIcon("res/Terrain.png"));
 	}
 	

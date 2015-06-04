@@ -4,13 +4,15 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Tower implements Cloneable{
+public abstract class Tower implements Cloneable{
 
+	protected Projectile[] projectiles;
+	
 	private String type;
 	private int cost;
 	private int range;
 	
-	private int damage;
+	protected double damage;
 	private int attackTime=0;
 	private int attackDelay=0;
 	
@@ -25,7 +27,7 @@ public class Tower implements Cloneable{
 	
 	private STRATEGY attackStrategy=STRATEGY.Random;
 	
-	public Tower(String type, int id, int cost, int range, int damage, double maxAttackTime, double maxAttackDelay){
+	public Tower(String type, int id, int cost, int range, double damage, double maxAttackTime, double maxAttackDelay, int maxProjectiles){
 		this.type=type;
 		if(TowerStore.towers[id]==null){
 			TowerStore.towers[id]=this;
@@ -35,6 +37,7 @@ public class Tower implements Cloneable{
 		this.damage=damage;
 		this.maxAttackTime=maxAttackTime;
 		this.maxAttackDelay=maxAttackDelay;
+		projectiles=new Projectile[maxProjectiles];
 	}
 	
 	public Object clone(){
@@ -54,22 +57,21 @@ public class Tower implements Cloneable{
 		g.drawImage(ImageHandler.getIcon(type), x, y, w, h, null);
 	}
 	
-	public void towerAttack(EnemyMove[] enemies, int x, int y) {
+	public void towerAttack(ArrayList<EnemyMove> enemies, int x, int y) {
 		if(target==null){
-			if(attackDelay>maxAttackDelay){
-				target=calculateEnemy(enemies,x,y);
+			if(attackDelay>=maxAttackDelay){
+				target=calculateEnemy(x,y, enemies);
 				if(target!=null){
-					target.setHealth(target.getHealth()-damage);
+					attack(x,y,target);
 					attackTime=0;
 					attackDelay=0;
-					System.out.println(type+" attacked enemy! Health: "+target.getHealth());
 				}
 			}else{
-				attackDelay+=1;
+				attackDelay+=Screen.speed;
 			}
 		}else{
 			if(attackTime<maxAttackTime){
-				attackTime+=1;
+				attackTime+=Screen.speed;
 			}else{
 				target=null;
 			}
@@ -77,7 +79,7 @@ public class Tower implements Cloneable{
 		
 	}
 	
-	private EnemyMove calculateEnemy(EnemyMove[] enemies, int x, int y){
+	private EnemyMove calculateEnemy(int x, int y, ArrayList<EnemyMove> enemies){
 		ArrayList<EnemyMove> inRange=new ArrayList<EnemyMove>();
 		int towerX=x;
 		int towerY=y;
@@ -88,18 +90,16 @@ public class Tower implements Cloneable{
 		int enemyX;
 		int enemyY;
 		
-		for(int i=0; i<enemies.length;i++){
-			if(enemies[i]!=null){
-				enemyX=(int)(enemies[i].getXPos()/Screen.TOWER_SIZE);
-				enemyY=(int)(enemies[i].getYPos()/Screen.TOWER_SIZE);
+		for(EnemyMove enemy : enemies){
+			enemyX=(int)(enemy.getXPos()/Screen.TOWER_SIZE);
+			enemyY=(int)(enemy.getYPos()/Screen.TOWER_SIZE);
 				
-				int dX=enemyX-towerX;
-				int dY=enemyY-towerY;
+			int dX=enemyX-towerX;
+			int dY=enemyY-towerY;
 				
-				int dRadius=towerRadius+enemyRadius;
-				if((dX*dX)+(dY*dY)<(dRadius*dRadius)){
-					inRange.add(enemies[i]);
-				}
+			int dRadius=towerRadius+enemyRadius;
+			if((dX*dX)+(dY*dY)<(dRadius*dRadius)){
+				inRange.add(enemy);
 			}
 		}
 		
@@ -111,6 +111,8 @@ public class Tower implements Cloneable{
 		}
 		return null;
 	}
+	
+	protected abstract void attack(int x, int y, EnemyMove target);
 	
 	public int getCost(){
 		return cost;
@@ -134,11 +136,11 @@ public class Tower implements Cloneable{
 		return type;
 	}
 
-	public int getDamage() {
+	public double getDamage() {
 		return damage;
 	}
 
-	public void setDamage(int damage) {
+	public void setDamage(double damage) {
 		this.damage = damage;
 	}
 
@@ -180,5 +182,9 @@ public class Tower implements Cloneable{
 
 	public void setTarget(EnemyMove target) {
 		this.target = target;
+	}
+	
+	public Projectile[] getProjectiles(){
+		return projectiles;
 	}
 }

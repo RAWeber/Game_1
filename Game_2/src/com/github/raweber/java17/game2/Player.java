@@ -1,6 +1,7 @@
 package com.github.raweber.java17.game2;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 
 public class Player{
@@ -18,13 +19,22 @@ public class Player{
 	}
 	
 	public void render(Graphics g){
+		Font playerFont = new Font(g.getFont().getName(), Font.PLAIN, Screen.TOWER_SIZE/3);
+		g.setFont(playerFont);
+
 		g.setColor(Color.GRAY);
 		g.fillRect(Screen.TOWER_SIZE, Screen.TOWER_SIZE*17+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*4, Screen.TOWER_SIZE*2);
 		g.setColor(Color.BLACK);
 		g.drawRect(Screen.TOWER_SIZE, Screen.TOWER_SIZE*17+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*4, Screen.TOWER_SIZE);
 		g.drawRect(Screen.TOWER_SIZE, Screen.TOWER_SIZE*18+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*4, Screen.TOWER_SIZE);
+		
 		g.drawString("Health: "+health, Screen.TOWER_SIZE+Screen.TOWER_SIZE/4, Screen.TOWER_SIZE*17+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER);
 		g.drawString("Money: "+money, Screen.TOWER_SIZE+Screen.TOWER_SIZE/4, Screen.TOWER_SIZE*18+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER);
+		
+		if(MouseHandler.holding!=0 && TowerStore.towers[MouseHandler.holding-1]!=null){
+			g.setColor(Color.red);
+			g.drawString(" - "+TowerStore.towers[MouseHandler.holding-1].getCost(), Screen.TOWER_SIZE+Screen.TOWER_SIZE*2, Screen.TOWER_SIZE*18+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER);
+		}
 	}
 	
 	public int getMoney(){

@@ -6,10 +6,8 @@ import java.util.Random;
 public class Wave {
 
 	private int waveNumber=0;
-	private int waveEnemies=0;
 	private int currentPoints;
-	private int pointsPerWave=10;
-	//private long lastSpawnTime=System.currentTimeMillis();
+	private int pointsPerWave=5;
 	
 	private boolean waveSpawning=false;
 	
@@ -18,36 +16,31 @@ public class Wave {
 	
 	public void nextWave(){
 		waveNumber++;
-		waveEnemies=0;
 		currentPoints=0;
+		currentDelay=25;
 		setWaveSpawning(true);
 		
 		System.out.println("Wave "+waveNumber+" incoming!");
 		
-		for(int i = 0; i < Screen.enemyMap.length;i++){
-			Screen.enemyMap[i]=null;
-		}
 	}
 	
 	public void spawnEnemies(){
 		if(currentPoints<waveNumber*pointsPerWave){
-			//if(System.currentTimeMillis()-1000>=lastSpawnTime){
 			if(currentDelay<spawnRate){
-				currentDelay++;
+				currentDelay+=Screen.speed;
 			}else{
 				currentDelay=0;
-				//lastSpawnTime=System.currentTimeMillis();
-				waveEnemies++;
 				ArrayList<Integer> spawnableIDs = new ArrayList<Integer>();
 				for(int i=0;i<Enemy.enemyList.length;i++){
 					if(Enemy.enemyList[i]!=null){
-						if(Enemy.enemyList[i].getId()<=waveNumber-1){
+						if(Enemy.enemyList[i].getId()*2<=waveNumber-1){
 							if(Enemy.enemyList[i].getValue()+currentPoints<=waveNumber*pointsPerWave){
 							spawnableIDs.add(Enemy.enemyList[i].getId());
 							}
 						}
 					}
 				}
+
 				spawnEnemy(spawnableIDs.get(new Random().nextInt(spawnableIDs.size())));
 				
 			}
@@ -57,14 +50,9 @@ public class Wave {
 	}
 	
 	private void spawnEnemy(int id){
-		for(int i = 0; i<Screen.enemyMap.length;i++){
-			if(Screen.enemyMap[i]==null){
-				Screen.enemyMap[i]=new EnemyMove(Enemy.enemyList[id],Screen.level.getSpawnPoint());
-				currentPoints+=Enemy.enemyList[id].getValue();
-				System.out.println(Enemy.enemyList[id].getType()+" spawned!");
-				break;
-			}
-		}
+		Screen.enemyMap.add(new EnemyMove(Enemy.enemyList[id],Screen.level.getSpawnPoint()));
+		currentPoints+=Enemy.enemyList[id].getValue();
+		System.out.println(Enemy.enemyList[id].getType()+" spawned!");
 	}
 
 	public boolean isWaveSpawning() {
