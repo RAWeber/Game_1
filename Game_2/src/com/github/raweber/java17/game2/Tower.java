@@ -2,13 +2,13 @@ package com.github.raweber.java17.game2;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Random;
 
 public abstract class Tower implements Cloneable{
 
 	protected Projectile[] projectiles;
 	
 	private String type;
+	private String attackType;
 	private int cost;
 	private int range;
 	
@@ -19,16 +19,20 @@ public abstract class Tower implements Cloneable{
 	private double maxAttackTime;
 	private double maxAttackDelay;
 	
-	private EnemyMove target;
+	private int maxProjectiles;
 	
-	private enum STRATEGY {
-		First, Last, Nearest, Farthest, Random;
+	private EnemyMove target;
+	private int kills;
+	
+	public static enum STRATEGY {
+		First, Last, Strongest, Fastest;
 	};
 	
-	private STRATEGY attackStrategy=STRATEGY.Random;
+	private STRATEGY attackStrategy=STRATEGY.First;
 	
-	public Tower(String type, int id, int cost, int range, double damage, double maxAttackTime, double maxAttackDelay, int maxProjectiles){
+	public Tower(String type, String attackType, int id, int cost, int range, double damage, double maxAttackTime, double maxAttackDelay, int maxProjectiles){
 		this.type=type;
+		this.attackType=attackType;
 		if(TowerStore.towers[id]==null){
 			TowerStore.towers[id]=this;
 		}
@@ -37,12 +41,16 @@ public abstract class Tower implements Cloneable{
 		this.damage=damage;
 		this.maxAttackTime=maxAttackTime;
 		this.maxAttackDelay=maxAttackDelay;
+		this.maxProjectiles=maxProjectiles;
 		projectiles=new Projectile[maxProjectiles];
+		kills=0;
 	}
 	
 	public Object clone(){
 		try {
-			return super.clone();
+			Tower clone = (Tower)super.clone();
+			clone.setProjectiles(new Projectile[maxProjectiles]);
+			return clone;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
@@ -103,10 +111,56 @@ public abstract class Tower implements Cloneable{
 			}
 		}
 		
-		if(attackStrategy==STRATEGY.Random){	
+		if(attackStrategy==STRATEGY.First){
 			if(inRange.size()>0){
-				int index = new Random().nextInt(inRange.size());
-				return inRange.get(index);
+				EnemyMove first=inRange.get(0);
+				for(EnemyMove e : inRange){
+					if(e.getDistance()>first.getDistance()){
+						first=e;
+					}
+				}
+				return first;
+			}
+		}
+		if(attackStrategy==STRATEGY.Last){
+			if(inRange.size()>0){
+				EnemyMove last=inRange.get(0);
+				for(EnemyMove e : inRange){
+					if(e.getDistance()<last.getDistance()){
+						last=e;
+					}
+				}
+				return last;
+			}
+		}
+		if(attackStrategy==STRATEGY.Strongest){
+			if(inRange.size()>0){
+				EnemyMove strongest=inRange.get(0);
+				for(EnemyMove e : inRange){
+					if(e.getMaxHealth()>strongest.getMaxHealth()){
+						strongest=e;
+					}else if(e.getHealth()==strongest.getHealth()){
+						if(e.getDistance()>strongest.getDistance()){
+							strongest=e;
+						}
+					}
+				}
+				return strongest;
+			}
+		}
+		if(attackStrategy==STRATEGY.Fastest){
+			if(inRange.size()>0){
+				EnemyMove fastest=inRange.get(0);
+				for(EnemyMove e : inRange){
+					if(e.getEnemy().getSpeed()>fastest.getEnemy().getSpeed()){
+						fastest=e;
+					}else if(e.getEnemy().getSpeed()==fastest.getEnemy().getSpeed()){
+						if(e.getDistance()>fastest.getDistance()){
+							fastest=e;
+						}
+					}
+				}
+				return fastest;
 			}
 		}
 		return null;
@@ -186,5 +240,29 @@ public abstract class Tower implements Cloneable{
 	
 	public Projectile[] getProjectiles(){
 		return projectiles;
+	}
+	
+	public void setProjectiles(Projectile[] projectiles){
+		this.projectiles=projectiles;
+	}
+	
+	public STRATEGY getAttackStrategy(){
+		return attackStrategy;
+	}
+	
+	public void setAttackStrategy(STRATEGY attackStrategy){
+		this.attackStrategy=attackStrategy;
+	}
+
+	public String getAttackType() {
+		return attackType;
+	}
+
+	public int getKills() {
+		return kills;
+	}
+
+	public void setKills(int kills) {
+		this.kills = kills;
 	}
 }

@@ -28,28 +28,32 @@ public class EnemyAIMove extends EnemyAI{
 			double yPos=enemy.getYPos()/Screen.TOWER_SIZE;
 			//move left
 			if(xPos>enemy.getRoutePosX()){
-				enemy.setXPos(enemy.getXPos()-enemy.getEnemy().getSpeed()*Screen.speed);
+				enemy.setXPos(enemy.getXPos()-enemy.getEnemy().getSpeed());
+				enemy.setDistance(enemy.getDistance()+enemy.getEnemy().getSpeed());
 				if(enemy.getXPos()<enemy.getRoutePosX()*Screen.TOWER_SIZE){
 					enemy.setXPos(enemy.getRoutePosX()*Screen.TOWER_SIZE);
 				}
 			}
 			//move right
 			if(xPos<enemy.getRoutePosX()){
-				enemy.setXPos(enemy.getXPos()+enemy.getEnemy().getSpeed()*Screen.speed);
+				enemy.setXPos(enemy.getXPos()+enemy.getEnemy().getSpeed());
+				enemy.setDistance(enemy.getDistance()+enemy.getEnemy().getSpeed());
 				if(enemy.getXPos()>enemy.getRoutePosX()*Screen.TOWER_SIZE){
 					enemy.setXPos(enemy.getRoutePosX()*Screen.TOWER_SIZE);
 				}
 			}
 			//move up
 			if(yPos>enemy.getRoutePosY()){
-				enemy.setYPos(enemy.getYPos()-enemy.getEnemy().getSpeed()*Screen.speed);
+				enemy.setYPos(enemy.getYPos()-enemy.getEnemy().getSpeed());
+				enemy.setDistance(enemy.getDistance()+enemy.getEnemy().getSpeed());
 				if(enemy.getYPos()<enemy.getRoutePosY()*Screen.TOWER_SIZE){
 					enemy.setYPos(enemy.getRoutePosY()*Screen.TOWER_SIZE);
 				}
 			}
 			//move down
 			if(yPos<enemy.getRoutePosY()){
-				enemy.setYPos(enemy.getYPos()+enemy.getEnemy().getSpeed()*Screen.speed);
+				enemy.setYPos(enemy.getYPos()+enemy.getEnemy().getSpeed());
+				enemy.setDistance(enemy.getDistance()+enemy.getEnemy().getSpeed());
 				if(enemy.getYPos()>enemy.getRoutePosY()*Screen.TOWER_SIZE){
 					enemy.setYPos(enemy.getRoutePosY()*Screen.TOWER_SIZE);
 				}

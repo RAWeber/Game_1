@@ -7,7 +7,7 @@ public class Wave {
 
 	private int waveNumber=0;
 	private int currentPoints;
-	private int pointsPerWave=5;
+	private int pointsPerWave=10;
 	
 	private boolean waveSpawning=false;
 	
@@ -15,6 +15,7 @@ public class Wave {
 	private int spawnRate=25;
 	
 	public void nextWave(){
+		Screen.speed=1;
 		waveNumber++;
 		currentPoints=0;
 		currentDelay=25;
@@ -27,7 +28,7 @@ public class Wave {
 	public void spawnEnemies(){
 		if(currentPoints<waveNumber*pointsPerWave){
 			if(currentDelay<spawnRate){
-				currentDelay+=Screen.speed;
+				currentDelay++;
 			}else{
 				currentDelay=0;
 				ArrayList<Integer> spawnableIDs = new ArrayList<Integer>();

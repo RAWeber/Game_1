@@ -8,11 +8,16 @@ public class EnemyMove {
 	
 	private boolean attacking;
 	private double health;
+	private double maxHealth;
 	
 	private double xPos;
 	private double yPos;
 	private int routePosX;
 	private int routePosY;
+	
+	private double distance;
+	
+	private long lastAttack=System.currentTimeMillis();
 	
 	public EnemyMove(Enemy enemy, SpawnPoint spawnPoint){
 		this.setEnemy(enemy);
@@ -25,6 +30,8 @@ public class EnemyMove {
 		
 		this.setAttack(false);
 		this.health=enemy.getHealth();
+		maxHealth=this.health;
+		distance=0;
 	}
 	
 	public void render(Graphics g, int x, int y) {
@@ -39,6 +46,12 @@ public class EnemyMove {
 		if(health<=0){
 			Screen.player.setMoney(Screen.player.getMoney()+enemy.getReward());
 			return true;
+		}
+		if(attacking){
+			if(System.currentTimeMillis()-1000>=lastAttack){
+				lastAttack=System.currentTimeMillis();
+				Screen.player.setHealth(Screen.player.getHealth()-enemy.getDamage());
+			}
 		}
 		return false;
 	}
@@ -98,5 +111,21 @@ public class EnemyMove {
 
 	public void setHealth(double health) {
 		this.health = health;
+	}
+
+	public double getMaxHealth() {
+		return maxHealth;
+	}
+
+	public void setMaxHealth(double maxHealth) {
+		this.maxHealth = maxHealth;
+	}
+
+	public double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(double distance) {
+		this.distance = distance;
 	}
 }

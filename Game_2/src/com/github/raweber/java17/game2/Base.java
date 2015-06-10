@@ -5,8 +5,6 @@ public class Base {
 	private int xPos;
 	private int yPos;
 	
-	//private int baseGround;
-	
 	public Base(int xPos, int yPos){
 		this.setXPos(xPos);
 		this.setYPos(yPos);

@@ -27,8 +27,8 @@ public class Projectile {
 	
 	public void update(){
 		updateDirection();
-		x+=speed*Math.cos(direction)*Screen.speed;
-		y+=speed*Math.sin(direction)*Screen.speed;
+		x+=speed*Math.cos(direction);
+		y+=speed*Math.sin(direction);
 		updateTarget();
 	}
 	

@@ -33,7 +33,7 @@ public class Screen extends JPanel implements Runnable {
 	
 	public static int[][] map = new int[25][15];
 	public static Tower[][] towerMap = new Tower[25][15];
-	private Image[] terrain = new Image[100];
+	public static Image[] terrain = new Image[100];
 	
 	public static ArrayList<EnemyMove> enemyMap= new ArrayList<EnemyMove>();
 	public static Wave wave;
@@ -44,7 +44,7 @@ public class Screen extends JPanel implements Runnable {
 	public static Player player;
 	public static Tower selectedTower;
 	
-	private double interpolation = 0;
+	//private double interpolation = 0;
 	
 	public Screen(int w) {
 		SCREEN_WIDTH=w;
@@ -55,7 +55,7 @@ public class Screen extends JPanel implements Runnable {
 		speed=1;
 		
 		levelFile=new LevelFile();
-		level=levelFile.getLevel("Level2");
+		level=levelFile.getLevel("Level1");
 		level.findSpawnPoint();
 		map=level.getMap();
 		
@@ -89,11 +89,12 @@ public class Screen extends JPanel implements Runnable {
 		}else if(gameState==STATE.Game){
 			g.setColor(Color.DARK_GRAY);
 			g.fillRect(0, SCREEN_BORDER, SCREEN_WIDTH, SCREEN_HEIGHT);
-			g.setColor(Color.black);
+			g.setColor(Color.black);	
 			
 			//Grid
 			for(int x=0;x<25;x++){
 				for(int y=0;y<15;y++){
+					g.setColor(Color.BLACK);
 					g.drawImage(terrain[map[x][y]], TOWER_SIZE+x*TOWER_SIZE, TOWER_SIZE+y*TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE,TOWER_SIZE, null);
 					g.drawRect(TOWER_SIZE+(x*TOWER_SIZE), TOWER_SIZE+(y*TOWER_SIZE)+SCREEN_BORDER, TOWER_SIZE, TOWER_SIZE);
 				}
@@ -110,25 +111,28 @@ public class Screen extends JPanel implements Runnable {
 					if(towerMap[x][y]!=null){
 						towerMap[x][y].render(g, TOWER_SIZE+(x*TOWER_SIZE), TOWER_SIZE+(y*TOWER_SIZE)+SCREEN_BORDER, TOWER_SIZE, TOWER_SIZE);
 						if(towerMap[x][y].getProjectiles().length==0){
+							//Laser
 							if(towerMap[x][y].getTarget()!=null){
 								g.setColor(Color.red);
 								g.drawLine(TOWER_SIZE*3/2+(x*TOWER_SIZE), TOWER_SIZE*3/2+(y*TOWER_SIZE)+SCREEN_BORDER, TOWER_SIZE*3/2+(int)towerMap[x][y].getTarget().getXPos(), TOWER_SIZE*3/2+(int)towerMap[x][y].getTarget().getYPos()+SCREEN_BORDER);
 							}
 						}else{
+							//Projectiles
 							Graphics2D g2d = (Graphics2D)g;
 							Projectile[] projectiles=towerMap[x][y].getProjectiles();
 							for(int i=0;i<projectiles.length;i++){
 								if(projectiles[i]!=null){
 									double rotation=Math.PI/2+projectiles[i].getDirection();
-									double pX = projectiles[i].getX()+TOWER_SIZE/4;
-									double pY = projectiles[i].getY()+TOWER_SIZE/4;
-									g2d.rotate(rotation, pX ,pY);
-									projectiles[i].render(g, (int)projectiles[i].getX(), (int)projectiles[i].getY(), TOWER_SIZE/2, TOWER_SIZE/2);
-									g2d.rotate(-rotation, pX ,pY);
+									double pX = projectiles[i].getX();
+									double pY = projectiles[i].getY();
+									g2d.rotate(rotation, pX+TOWER_SIZE/4 ,pY+TOWER_SIZE/4);
+									projectiles[i].render(g, (int)pX, (int)pY, TOWER_SIZE/2, TOWER_SIZE/2);
+									g2d.rotate(-rotation, pX+TOWER_SIZE/4,pY+TOWER_SIZE/4);
 								}
 							}
 
 						}
+						//Range
 						if(towerMap[x][y]==selectedTower){
 							g.setColor(Color.gray);
 							g.drawOval((TOWER_SIZE*(x+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2, (TOWER_SIZE*(y+1))-(TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE)/2+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE, TOWER_SIZE*towerMap[x][y].getRange()*2+TOWER_SIZE);
@@ -138,43 +142,7 @@ public class Screen extends JPanel implements Runnable {
 					}
 				}
 			}
-			
-			//selectedTower
-			g.setColor(Color.black);
-			g.drawImage(terrain[map[0][0]], TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*4, null);
-			if(selectedTower!=null){
-				selectedTower.render(g, TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*4);
-			}
-			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*4);
-			
-			//description
-			g.setColor(Color.gray);
-			g.fillRect(TOWER_SIZE*31,TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*10);
-			g.setColor(Color.black);
-			g.drawRect(TOWER_SIZE*31,TOWER_SIZE+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*10);
-			
-			//strategies
-			g.setColor(Color.gray);
-			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*5+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
-			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*7+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
-			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*8+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
-			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*10+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
-			g.setColor(Color.black);
-			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*5+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
-			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*7+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
-			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*8+TOWER_SIZE/2+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
-			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*10+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE);
-			
-			//upgrades
-			g.setColor(Color.gray);
-			g.fillRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*12+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*2);
-			g.fillRect(TOWER_SIZE*31, TOWER_SIZE*12+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*2);
-			g.setColor(Color.black);
-			g.drawRect(TOWER_SIZE*26+TOWER_SIZE/2, TOWER_SIZE*12+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*2);
-			g.drawRect(TOWER_SIZE*31, TOWER_SIZE*12+SCREEN_BORDER, TOWER_SIZE*4, TOWER_SIZE*2);
-			
-			//Options
-			
+					
 			//Startbutton
 			g.setFont(new Font(g.getFont().getName(), Font.PLAIN, Screen.TOWER_SIZE*3/2));
 			g.setColor(Color.cyan);
@@ -184,22 +152,14 @@ public class Screen extends JPanel implements Runnable {
 			if(enemyMap.size()==0){
 				g.drawString("Next Wave", TOWER_SIZE*27, TOWER_SIZE*18+TOWER_SIZE/2+SCREEN_BORDER);
 			}else if(speed==1){
-				g.drawString("Speed X4", TOWER_SIZE*27, TOWER_SIZE*18+TOWER_SIZE/2+SCREEN_BORDER);
+				g.drawString("Speed X2", TOWER_SIZE*27, TOWER_SIZE*18+TOWER_SIZE/2+SCREEN_BORDER);
 			}else{
 				g.drawString("Speed X1", TOWER_SIZE*27, TOWER_SIZE*18+TOWER_SIZE/2+SCREEN_BORDER);
 			}
 			
-			TowerStore.render(g);		
+			SelectedTowerHUD.render(g);
 			player.render(g);
-			
-			if(MouseHandler.holding!=0 && TowerStore.towers[MouseHandler.holding-1]!=null){
-				int i=MouseHandler.holding-1;
-				TowerStore.towers[i].render(g, MouseHandler.getMouseX()-(int)(TOWER_SIZE/2), MouseHandler.getMouseY()-(int)(TOWER_SIZE/2),TOWER_SIZE,TOWER_SIZE);
-				if(MouseHandler.getMouseX()>TOWER_SIZE && MouseHandler.getMouseX()<TOWER_SIZE*26 && MouseHandler.getMouseY()>TOWER_SIZE+SCREEN_BORDER && MouseHandler.getMouseY()<TOWER_SIZE*16+SCREEN_BORDER){
-					g.setColor(Color.gray);
-					g.drawOval((MouseHandler.getMouseX())-(TOWER_SIZE*TowerStore.towers[i].getRange()*2+TOWER_SIZE)/2, (MouseHandler.getMouseY())-(TOWER_SIZE*TowerStore.towers[i].getRange()*2+TOWER_SIZE)/2, TOWER_SIZE*TowerStore.towers[i].getRange()*2+TOWER_SIZE, TOWER_SIZE*TowerStore.towers[i].getRange()*2+TOWER_SIZE);
-				}
-			}
+			TowerStore.render(g);	
 		}
 		g.setColor(Color.white);
 		g.drawString(fps+"", 20, 20);
@@ -213,8 +173,8 @@ public class Screen extends JPanel implements Runnable {
 		long lastFrame = System.currentTimeMillis();
 		int frames = 0;
 		
-		final int TICKS_PER_SECOND = 25;
-		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+//		final int TICKS_PER_SECOND = 25*speed;
+//		final int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 		final int MAX_FRAMESKIP = 5;
 
 		double next_game_tick = System.currentTimeMillis();
@@ -222,6 +182,8 @@ public class Screen extends JPanel implements Runnable {
 	    
 		while (true) {
 			loops = 0;
+			int TICKS_PER_SECOND = 25*speed;
+			int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 			while (System.currentTimeMillis() > next_game_tick && loops < MAX_FRAMESKIP) {
 				update();
 				next_game_tick += SKIP_TICKS;
@@ -234,18 +196,24 @@ public class Screen extends JPanel implements Runnable {
 					lastFrame=System.currentTimeMillis();
 				}
 			}
-			interpolation = (System.currentTimeMillis() + SKIP_TICKS - next_game_tick)/ (double) SKIP_TICKS;
+			//interpolation = (System.currentTimeMillis() + SKIP_TICKS - next_game_tick)/ (double) SKIP_TICKS;
 			repaint();
 		}
 	}
 	
 	public void update(){
-		enemyUpdate();
-		towerUpdate();
+		if(gameState==STATE.Game){
+			enemyUpdate();
+			towerUpdate();
 		
 		
-		if(wave.isWaveSpawning()){
-			wave.spawnEnemies();
+			if(wave.isWaveSpawning()){
+				wave.spawnEnemies();
+			}
+		
+			if(player.getHealth()<=0){
+				gameState=STATE.GameOver;
+			}
 		}
 	}
 	

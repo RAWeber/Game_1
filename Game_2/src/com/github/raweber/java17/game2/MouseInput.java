@@ -19,15 +19,16 @@ public class MouseInput implements MouseListener, MouseMotionListener {
 	}
 
 	public void mousePressed(MouseEvent e) {
-		MouseHandler.mouseDown(e);
+//		MouseHandler.mouseDown(e);
 	}
 
 	public void mouseReleased(MouseEvent e) {
-
+		MouseHandler.mouseUp(e);
 	}
 
 	public void mouseDragged(MouseEvent e) {
 		MouseHandler.mouseMoved(e);
+		MouseHandler.mouseDown(e);
 	}
 
 	public void mouseMoved(MouseEvent e){
