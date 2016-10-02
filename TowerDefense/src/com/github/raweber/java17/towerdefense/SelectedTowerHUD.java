@@ -47,8 +47,31 @@ public class SelectedTowerHUD {
 		g.setColor(Color.black);
 		g.drawRect(Screen.TOWER_SIZE*26+Screen.TOWER_SIZE*3/4, Screen.TOWER_SIZE*6+Screen.TOWER_SIZE*3/4+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*3+Screen.TOWER_SIZE*7/8, Screen.TOWER_SIZE*2);
 		g.drawRect(Screen.TOWER_SIZE*30+Screen.TOWER_SIZE*7/8, Screen.TOWER_SIZE*6+Screen.TOWER_SIZE*3/4+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*3+Screen.TOWER_SIZE*7/8, Screen.TOWER_SIZE*2);
+		if(Screen.selectedTower!=null){
+			g.drawString("Upgrade: ", Screen.TOWER_SIZE*27, Screen.TOWER_SIZE*7+Screen.TOWER_SIZE/4+Screen.SCREEN_BORDER);
+			g.drawString(Screen.selectedTower.getUpgradeOne().getUpgrade(), Screen.TOWER_SIZE*27, Screen.TOWER_SIZE*7+Screen.TOWER_SIZE*7/8+Screen.SCREEN_BORDER);
+			g.drawString("Cost: "+Screen.selectedTower.getUpgradeOne().getCost(), Screen.TOWER_SIZE*27, Screen.TOWER_SIZE*8+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER);
+			g.drawString("Upgrade: ", Screen.TOWER_SIZE*31+Screen.TOWER_SIZE/8, Screen.TOWER_SIZE*7+Screen.TOWER_SIZE/4+Screen.SCREEN_BORDER);
+			g.drawString(Screen.selectedTower.getUpgradeTwo().getUpgrade(), Screen.TOWER_SIZE*31+Screen.TOWER_SIZE/8, Screen.TOWER_SIZE*7+Screen.TOWER_SIZE*7/8+Screen.SCREEN_BORDER);
+			g.drawString("Cost: "+Screen.selectedTower.getUpgradeTwo().getCost(), Screen.TOWER_SIZE*31+Screen.TOWER_SIZE/8, Screen.TOWER_SIZE*8+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER);
+			if(Screen.selectedTower.getUpgradeOne().getCost()>Screen.player.getMoney()){
+				g.setColor(new Color(255,0,0,100));
+				g.fillRect(Screen.TOWER_SIZE*26+Screen.TOWER_SIZE*3/4, Screen.TOWER_SIZE*6+Screen.TOWER_SIZE*3/4+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*3+Screen.TOWER_SIZE*7/8, Screen.TOWER_SIZE*2);
+			}
+			if(Screen.selectedTower.getUpgradeTwo().getCost()>Screen.player.getMoney()){
+				g.setColor(new Color(255,0,0,100));
+				g.fillRect(Screen.TOWER_SIZE*30+Screen.TOWER_SIZE*7/8, Screen.TOWER_SIZE*6+Screen.TOWER_SIZE*3/4+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*3+Screen.TOWER_SIZE*7/8, Screen.TOWER_SIZE*2);
+			}
+		}else{
+			g.drawString("Upgrade: ", Screen.TOWER_SIZE*27, Screen.TOWER_SIZE*7+Screen.TOWER_SIZE/4+Screen.SCREEN_BORDER);
+			g.drawString("Cost: ", Screen.TOWER_SIZE*27, Screen.TOWER_SIZE*8+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER);
+			g.drawString("Upgrade: ", Screen.TOWER_SIZE*31+Screen.TOWER_SIZE/8, Screen.TOWER_SIZE*7+Screen.TOWER_SIZE/4+Screen.SCREEN_BORDER);
+			g.drawString("Cost: ", Screen.TOWER_SIZE*31+Screen.TOWER_SIZE/8, Screen.TOWER_SIZE*8+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER);
+		}
 		
 		//stats
+		playerFont = new Font(g.getFont().getName(), Font.PLAIN, Screen.TOWER_SIZE/2);
+		g.setFont(playerFont);
 		g.setColor(Color.black);
 		g.drawRect(Screen.TOWER_SIZE*26+Screen.TOWER_SIZE*3/4, Screen.TOWER_SIZE*9+Screen.SCREEN_BORDER, Screen.TOWER_SIZE*8, Screen.TOWER_SIZE*4+Screen.TOWER_SIZE/2);
 		if(Screen.selectedTower!=null){
