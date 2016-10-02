@@ -40,7 +40,7 @@ public class Projectile {
 		int dX=(int)(target.getYPos()+Screen.TOWER_SIZE*3/2+Screen.SCREEN_BORDER-(y+Screen.TOWER_SIZE/4));
 		int dY=(int)(target.getXPos()+Screen.TOWER_SIZE*3/2-(x+Screen.TOWER_SIZE/4));
 		
-		int dRadius=(Screen.TOWER_SIZE/4)*Screen.speed*speed;
+		int dRadius=(Screen.TOWER_SIZE/4)*speed;
 		
 		if(dX*dX+dY*dY<dRadius){
 			target.setHealth(target.getHealth()-damage);

@@ -37,6 +37,7 @@ public class MouseHandler {
 		}else{
 			selectTower(e.getX(),e.getY());
 			setStrategy(e.getX(),e.getY());
+			upgradeTower(e.getX(),e.getY());
 			sellButton(e.getX(),e.getY());
 			if(e.getX()>Screen.TOWER_SIZE*26+Screen.TOWER_SIZE/2 && e.getX()<Screen.TOWER_SIZE*26+Screen.TOWER_SIZE/2+Screen.TOWER_SIZE*8+Screen.TOWER_SIZE/2){
 				if(e.getY()>Screen.TOWER_SIZE*16+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER && e.getY()<Screen.TOWER_SIZE*19+Screen.TOWER_SIZE/2+Screen.SCREEN_BORDER){
@@ -111,6 +112,28 @@ public class MouseHandler {
 				if(x>=Screen.TOWER_SIZE*32 && x<=Screen.TOWER_SIZE*32+Screen.TOWER_SIZE*2+Screen.TOWER_SIZE*3/4 && y>=Screen.TOWER_SIZE*2+Screen.TOWER_SIZE*7/12+Screen.SCREEN_BORDER && y<= Screen.TOWER_SIZE*3+Screen.TOWER_SIZE*7/12+Screen.SCREEN_BORDER) Screen.selectedTower.setAttackStrategy(Tower.STRATEGY.Last);
 				if(x>=Screen.TOWER_SIZE*32 && x<=Screen.TOWER_SIZE*32+Screen.TOWER_SIZE*2+Screen.TOWER_SIZE*3/4 && y>=Screen.TOWER_SIZE*3+Screen.TOWER_SIZE*11/12+Screen.SCREEN_BORDER && y<=Screen.TOWER_SIZE*4+Screen.TOWER_SIZE*11/12+Screen.SCREEN_BORDER) Screen.selectedTower.setAttackStrategy(Tower.STRATEGY.Strongest);
 				if(x>=Screen.TOWER_SIZE*32 && x<=Screen.TOWER_SIZE*32+Screen.TOWER_SIZE*2+Screen.TOWER_SIZE*3/4 && y>=Screen.TOWER_SIZE*5+Screen.TOWER_SIZE*3/12+Screen.SCREEN_BORDER && y<=Screen.TOWER_SIZE*6+Screen.TOWER_SIZE*3/12+Screen.SCREEN_BORDER) Screen.selectedTower.setAttackStrategy(Tower.STRATEGY.Fastest);
+			}
+		}
+	}
+	
+	private static void upgradeTower(int x, int y){
+		if(x>=Screen.TOWER_SIZE*26+Screen.TOWER_SIZE*3/4 && x<= Screen.TOWER_SIZE*30+Screen.TOWER_SIZE*5/8 &&  y>=Screen.TOWER_SIZE*6+Screen.TOWER_SIZE*3/4+Screen.SCREEN_BORDER && y<=Screen.TOWER_SIZE*8+Screen.TOWER_SIZE*3/4+Screen.SCREEN_BORDER){	
+			if(Screen.selectedTower!=null){
+				if(Screen.selectedTower.getUpgradeOne().getUpgrade()!="Maxed"){
+					if(Screen.player.getMoney()>=Screen.selectedTower.getUpgradeOne().getCost()){
+						Screen.player.setMoney(Screen.player.getMoney()-Screen.selectedTower.getUpgradeOne().getCost());
+						Screen.selectedTower.upgradeOne();
+					}
+				}
+			}
+		}else if(x>=Screen.TOWER_SIZE*30+Screen.TOWER_SIZE*7/8 && x<= Screen.TOWER_SIZE*34+Screen.TOWER_SIZE*3/4 &&  y>=Screen.TOWER_SIZE*6+Screen.TOWER_SIZE*3/4+Screen.SCREEN_BORDER && y<=Screen.TOWER_SIZE*8+Screen.TOWER_SIZE*3/4+Screen.SCREEN_BORDER){
+			if(Screen.selectedTower!=null){
+				if(Screen.selectedTower.getUpgradeTwo().getUpgrade()!="Maxed"){
+					if(Screen.player.getMoney()>=Screen.selectedTower.getUpgradeTwo().getCost()){
+						Screen.player.setMoney(Screen.player.getMoney()-Screen.selectedTower.getUpgradeTwo().getCost());
+						Screen.selectedTower.upgradeTwo();
+					}
+				}
 			}
 		}
 	}

@@ -3,7 +3,7 @@ package com.github.raweber.java17.towerdefense;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-public abstract class Tower implements Cloneable{
+public abstract class Tower implements Cloneable, Upgradable{
 
 	protected Projectile[] projectiles;
 	
@@ -19,7 +19,8 @@ public abstract class Tower implements Cloneable{
 	private double maxAttackTime;
 	private double maxAttackDelay;
 	
-	private int maxProjectiles;
+	protected Upgrade upgradeOne;
+	protected Upgrade upgradeTwo;
 	
 	private EnemyMove target;
 	private int kills;
@@ -30,7 +31,7 @@ public abstract class Tower implements Cloneable{
 	
 	private STRATEGY attackStrategy=STRATEGY.First;
 	
-	public Tower(String type, String attackType, int id, int cost, int range, double damage, double maxAttackTime, double maxAttackDelay, int maxProjectiles){
+	public Tower(String type, String attackType, int id, int cost, int range, double damage, double maxAttackTime, double maxAttackDelay, int maxProjectiles, Upgrade upgradeOne, Upgrade upgradeTwo){
 		this.type=type;
 		this.attackType=attackType;
 		if(TowerStore.towers[id]==null){
@@ -41,15 +42,18 @@ public abstract class Tower implements Cloneable{
 		this.damage=damage;
 		this.maxAttackTime=maxAttackTime;
 		this.maxAttackDelay=maxAttackDelay;
-		this.maxProjectiles=maxProjectiles;
 		projectiles=new Projectile[maxProjectiles];
+		this.upgradeOne=upgradeOne;
+		this.upgradeTwo=upgradeTwo;
 		kills=0;
 	}
 	
 	public Object clone(){
 		try {
 			Tower clone = (Tower)super.clone();
-			clone.setProjectiles(new Projectile[maxProjectiles]);
+			clone.setProjectiles(new Projectile[projectiles.length]);
+			clone.setUpgradeOne(new Upgrade(upgradeOne.getUpgrade(),upgradeOne.getCost()));
+			clone.setUpgradeTwo(new Upgrade(upgradeTwo.getUpgrade(),upgradeTwo.getCost()));
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -75,11 +79,11 @@ public abstract class Tower implements Cloneable{
 					attackDelay=0;
 				}
 			}else{
-				attackDelay+=Screen.speed;
+				attackDelay++;
 			}
 		}else{
 			if(attackTime<maxAttackTime){
-				attackTime+=Screen.speed;
+				attackTime++;
 			}else{
 				target=null;
 			}
@@ -198,22 +202,6 @@ public abstract class Tower implements Cloneable{
 		this.damage = damage;
 	}
 
-	public int getAttackTime() {
-		return attackTime;
-	}
-
-	public void setAttackTime(int attackTime) {
-		this.attackTime = attackTime;
-	}
-
-	public int getAttackDelay() {
-		return attackDelay;
-	}
-
-	public void setAttackDelay(int attackDelay) {
-		this.attackDelay = attackDelay;
-	}
-
 	public double getMaxAttackTime() {
 		return maxAttackTime;
 	}
@@ -264,5 +252,23 @@ public abstract class Tower implements Cloneable{
 
 	public void setKills(int kills) {
 		this.kills = kills;
+	}
+	
+	
+	public Upgrade getUpgradeOne() {
+		return upgradeOne;
+	}
+
+	public void setUpgradeOne(Upgrade upgradeOne) {
+		this.upgradeOne = upgradeOne;
+	}
+
+
+	public Upgrade getUpgradeTwo() {
+		return upgradeTwo;
+	}
+
+	public void setUpgradeTwo(Upgrade upgradeTwo) {
+		this.upgradeTwo = upgradeTwo;
 	}
 }
