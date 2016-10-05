@@ -13,7 +13,6 @@ public class ImageHandler {
 		images.put("BasicTower", new ImageIcon("res/BasicTower.png"));
 		images.put("BombTower", new ImageIcon("res/BombTower.png"));
 		images.put("LaserTower", new ImageIcon("res/LaserTower.png"));
-		images.put("FlameTower", new ImageIcon("res/FlameTower.png"));
 		images.put("SlowTower", new ImageIcon("res/SlowTower.png"));
 		images.put("GroundTower", new ImageIcon("res/GroundTower.png"));
 		images.put("BasicEnemy", new ImageIcon("res/BasicEnemy.png"));
